@@ -1,0 +1,871 @@
+<title>Webway Wanderers — Pairing Dossier</title>
+<style>
+  :root {
+    --bg: #f1eee5;
+    --surface: #ffffff;
+    --surface-2: #e8e3d5;
+    --ink: #1c1a15;
+    --ink-dim: #6b6455;
+    --line: rgba(28,26,21,0.14);
+    --accent: #8a5a20;
+    --accent-ink: #ffffff;
+    --good-2: #1f6b48;
+    --good-1: #4c8f6c;
+    --bad-2: #97372f;
+    --bad-1: #b56a5f;
+    --neutral: #8f8878;
+    --font-display: "Segoe UI", "Arial Narrow", ui-sans-serif, sans-serif;
+    --font-body: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --surface: #1b1e23;
+      --surface-2: #23272e;
+      --ink: #ecebe5;
+      --ink-dim: #9a9585;
+      --line: rgba(236,235,229,0.12);
+      --accent: #c99a4e;
+      --accent-ink: #14161a;
+      --good-2: #4fae82;
+      --good-1: #3a6f56;
+      --bad-2: #e0685c;
+      --bad-1: #8f4842;
+      --neutral: #565148;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a; --surface: #1b1e23; --surface-2: #23272e; --ink: #ecebe5; --ink-dim: #9a9585;
+    --line: rgba(236,235,229,0.12); --accent: #c99a4e; --accent-ink: #14161a;
+    --good-2: #4fae82; --good-1: #3a6f56; --bad-2: #e0685c; --bad-1: #8f4842; --neutral: #565148;
+  }
+  :root[data-theme="light"] {
+    --bg: #f1eee5; --surface: #ffffff; --surface-2: #e8e3d5; --ink: #1c1a15; --ink-dim: #6b6455;
+    --line: rgba(28,26,21,0.14); --accent: #8a5a20; --accent-ink: #ffffff;
+    --good-2: #1f6b48; --good-1: #4c8f6c; --bad-2: #97372f; --bad-1: #b56a5f; --neutral: #8f8878;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.4;
+  }
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* header */
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    font-size: clamp(26px, 4.2vw, 38px);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .sub {
+    color: var(--ink-dim);
+    font-size: 14px;
+    max-width: 60ch;
+  }
+
+  /* opponent picker */
+  .picker {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .picker label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+  select {
+    flex: 1;
+    min-width: 220px;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--ink);
+    padding: 10px 12px;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+    background-position: calc(100% - 20px) center, calc(100% - 15px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  select:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .warn {
+    font-size: 12px;
+    color: var(--bad-2);
+    font-weight: 600;
+  }
+
+  /* empty state */
+  .empty {
+    border: 1px dashed var(--line);
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 14px;
+  }
+
+  #result { display: none; flex-direction: column; gap: 22px; }
+  #result.active { display: flex; }
+
+  /* section titles */
+  .section-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* recommended lineup */
+  .lineup {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .lineup-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .lineup-row:last-of-type { border-bottom: none; }
+  .who { display: flex; flex-direction: column; gap: 2px; }
+  .who .name { font-weight: 700; font-size: 15px; }
+  .who .meta { font-size: 12px; color: var(--ink-dim); }
+  .who.them { text-align: right; }
+  .vs {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-align: center;
+  }
+  .score-pill {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    min-width: 40px;
+    text-align: center;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    justify-self: center;
+  }
+  .score-pill.s2 { background: var(--good-2); color: #fff; border-color: var(--good-2); }
+  .score-pill.s1 { background: var(--good-1); color: #fff; border-color: var(--good-1); }
+  .score-pill.s0 { background: var(--surface-2); color: var(--ink); }
+  .score-pill.sm1 { background: var(--bad-1); color: #fff; border-color: var(--bad-1); }
+  .score-pill.sm2 { background: var(--bad-2); color: #fff; border-color: var(--bad-2); }
+
+  .totalbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border-top: 2px solid var(--ink);
+  }
+  .totalbar .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
+  .totalbar .value { font-family: var(--font-mono); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .verdict { font-size: 13px; color: var(--ink-dim); margin-top: 2px; }
+
+  /* matrix */
+  .matrix-scroll { overflow-x: auto; border: 1px solid var(--line); }
+  table.matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+  table.matrix th, table.matrix td {
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  table.matrix thead th {
+    background: var(--surface-2);
+    font-weight: 700;
+  }
+  table.matrix th.corner { background: var(--surface); border: none; }
+  table.matrix th .pname { font-size: 13px; font-weight: 800; display: block; }
+  table.matrix th .pmeta { font-size: 10.5px; color: var(--ink-dim); font-weight: 500; text-transform: none; letter-spacing: 0; display: block; margin-top: 2px; }
+  table.matrix tbody th {
+    background: var(--surface-2);
+    text-align: left;
+    white-space: nowrap;
+  }
+  td.cell {
+    font-family: var(--font-mono);
+    background: var(--surface);
+  }
+  td.cell .tot {
+    font-size: 15px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  td.cell .brk {
+    font-size: 9.5px;
+    color: var(--ink-dim);
+    display: block;
+    margin-top: 1px;
+  }
+  td.cell.s2 { color: var(--good-2); }
+  td.cell.s1 { color: var(--good-1); }
+  td.cell.s0 { color: var(--ink-dim); }
+  td.cell.sm1 { color: var(--bad-1); }
+  td.cell.sm2 { color: var(--bad-2); }
+  td.cell.picked {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 11.5px;
+    color: var(--ink-dim);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .swatch { width: 10px; height: 10px; display: inline-block; }
+
+  footer {
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-align: center;
+    padding-top: 10px;
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">UKTC Teams — Round Pairing Dossier</div>
+    <h1>Webway Wanderers</h1>
+    <div class="sub">Select your round opponent. Their five operatives and force dispositions load automatically, scored against our roster to surface the pairing order that gives us the best shot.</div>
+  </header>
+
+  <div class="picker">
+    <label for="opponent">Opponent</label>
+    <select id="opponent">
+      <option value="">— choose a team —</option>
+    </select>
+    <span class="warn" id="warn" style="display:none;"></span>
+  </div>
+
+  <div class="empty" id="empty">Pick an opponent above to generate the pairing recommendation.</div>
+
+  <div id="result">
+    <section>
+      <h2 class="section-title">Recommended pairing order</h2>
+      <div class="lineup" id="lineup"></div>
+      <div class="totalbar">
+        <div>
+          <div class="label">Projected total</div>
+          <div class="verdict" id="verdict"></div>
+        </div>
+        <div class="value" id="total"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Full matchup matrix</h2>
+      <div class="matrix-scroll">
+        <table class="matrix" id="matrix"></table>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--good-2)"></span> +2 strong</span>
+        <span><span class="swatch" style="background:var(--good-1)"></span> +1 favoured</span>
+        <span><span class="swatch" style="background:var(--surface-2)"></span> 0 even</span>
+        <span><span class="swatch" style="background:var(--bad-1)"></span> -1 unfavoured</span>
+        <span><span class="swatch" style="background:var(--bad-2)"></span> -2 weak</span>
+        <span>Highlighted cell = recommended pairing. Score = army matchup + disposition matchup.</span>
+      </div>
+    </section>
+  </div>
+
+  <footer>Ratings are your own strong/weak calls per army and per Force Disposition. Matrix is a planning aid for the live pairing draft, not a binding lock.</footer>
+</div>
+
+<script>
+(function () {
+  const MY_TEAM_NAME = "Webway Wanderers";
+
+  const MY_PLAYERS = [
+    { key: 'luke', name: 'Luke Watson', army: "T'au Empire", disposition: 'Purge the Foe' },
+    { key: 'court', name: 'Courtney Evetts', army: 'Aeldari', disposition: 'Take and Hold' },
+    { key: 'andy', name: 'Andy Ingram-Tedd', army: 'Adeptus Mechanicus', disposition: 'Priority Assets' },
+    { key: 'dale', name: 'Dale Ahmed', army: 'Necrons', disposition: 'Reconnaissance' },
+    { key: 'matt', name: 'Matt Smith', army: 'Chaos Daemons', disposition: 'Disruption' }
+  ];
+
+  const ARMY_RATINGS = {
+    luke:  {"Emperor's Children":1,"Space Marines (Astartes)":1,"Orks":0,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":1,"Thousand Sons":1,"Chaos Knights":0,"Imperial Knights":0,"Grey Knights":-1,"Chaos Daemons":1,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":-1,"Drukhari":1,"Genestealer Cult":1,"Space Wolves":-1,"Black Templars":0,"Deathwatch":-1,"Imperial Agents":0},
+    court: {"Emperor's Children":1,"Space Marines (Astartes)":-1,"Orks":0,"Adeptus Custodes":1,"T'au Empire":-1,"Necrons":0,"Tyranids":1,"Chaos Space Marines":0,"Leagues of Votann":-1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":1,"Adeptus Mechanicus":-1,"Death Guard":0,"Dark Angels":1,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":0,"World Eaters":-1,"Drukhari":-1,"Genestealer Cult":-1,"Space Wolves":0,"Black Templars":1,"Deathwatch":1,"Imperial Agents":0},
+    andy:  {"Emperor's Children":0,"Space Marines (Astartes)":0,"Orks":-1,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":-1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":0,"Thousand Sons":0,"Chaos Knights":1,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":1,"Astra Militarum":1,"Blood Angels":0,"World Eaters":1,"Drukhari":0,"Genestealer Cult":-1,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0},
+    dale:  {"Emperor's Children":1,"Space Marines (Astartes)":0,"Orks":1,"Adeptus Custodes":-1,"T'au Empire":-1,"Necrons":0,"Tyranids":0,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":-1,"Imperial Knights":-1,"Grey Knights":0,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":1,"World Eaters":1,"Drukhari":-1,"Genestealer Cult":0,"Space Wolves":-1,"Black Templars":0,"Deathwatch":0,"Imperial Agents":0},
+    matt:  {"Emperor's Children":-1,"Space Marines (Astartes)":1,"Orks":1,"Adeptus Custodes":0,"T'au Empire":-1,"Necrons":-1,"Tyranids":1,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":1,"Drukhari":1,"Genestealer Cult":0,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0}
+  };
+
+  const DISPOSITION_RATINGS = {
+    luke:  {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0},
+    court: {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":0,"Disruption":1},
+    andy:  {"Purge the Foe":1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":-1,"Disruption":-1},
+    dale:  {"Purge the Foe":-1,"Take and Hold":0,"Priority Assets":1,"Reconnaissance":0,"Disruption":1},
+    matt:  {"Purge the Foe":1,"Take and Hold":-1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0}
+  };
+
+  const ROSTER_RAW = `Adepta Sororitas|Priority Assets|Anton Trussell|Finleys Angels
+Adepta Sororitas|Priority Assets|Thomas Douch|Fire and Dice - Targaryen
+Adepta Sororitas|Priority Assets|Samir Sydykov|Fire and Dice - Tiger's eye
+Adepta Sororitas|Priority Assets|Luke Alderson-Fletcher|Shadowkeepers :: The Clueless
+Adepta Sororitas|Reconnaissance|Tom Balmforth|Blackscar Gaming
+Adepta Sororitas|Reconnaissance|Dave Skinner|Polaris killer Bs
+Adepta Sororitas|Take and Hold|Shaun Turner|Sofa Meta
+Adepta Sororitas|Take and Hold|Doug Tabor|Team Stonehammer
+Adepta Sororitas|Take and Hold|Matt Puffett|Tuesday Wizards
+Adeptus Custodes|Disruption|Steve Ashby|Cooked Green Dice
+Adeptus Custodes|Disruption|Aidan Brocklehurst|Mind Gobliins
+Adeptus Custodes|Disruption|matthew Doar|Phoenix40K - Outrageous Creatures
+Adeptus Custodes|Disruption|George Ford|Shadowkeepers :: The Clueless
+Adeptus Custodes|Disruption|Alexander Thomson|Team YEET
+Adeptus Custodes|Disruption|Edward Muir|Waaagh Boys
+Adeptus Custodes|Priority Assets|Sam Sanders|Live and let dice
+Adeptus Custodes|Purge the Foe|Nate Waite|Blackscar Gaming
+Adeptus Custodes|Purge the Foe|Ed Paszek|Carnage Chaos
+Adeptus Custodes|Purge the Foe|Oliver Steer|Death Korps of Queens Road - Orca Squadron
+Adeptus Custodes|Purge the Foe|Max Berry|Hobby Henchmen II
+Adeptus Custodes|Purge the Foe|John Schmidt|The Minutemen 2
+Adeptus Custodes|Purge the Foe|Stephen Box|Vanguard Tactics
+Adeptus Custodes|Purge the Foe|Olly Hayter|Zero On Primary
+Adeptus Custodes|Reconnaissance|Chris Boulton|DKQR - Frog
+Adeptus Custodes|Reconnaissance|Karl Sumner|Krump or Dice Tryin' B Team
+Adeptus Custodes|Reconnaissance|Chong Liu|Tuesday Wizards
+Adeptus Custodes|Take and Hold|James Evans|Ballers Brawlers
+Adeptus Custodes|Take and Hold|Rob Willars|Low Rollers
+Adeptus Custodes|Take and Hold|Dom Maidlow|Mind Goblins
+Adeptus Custodes|Take and Hold|Tel Hunt|Polaris
+Adeptus Custodes|Take and Hold|Dan Jemmerson|The Holy Hand Grenades
+Adeptus Custodes|Take and Hold|Jack Pugh|TYPHOON
+Adeptus Mechanicus|Disruption|Kyle Beauly|Globo Gym
+Adeptus Mechanicus|Priority Assets|Harry Saunderson|Adeptus Mancunian
+Adeptus Mechanicus|Priority Assets|Jonny Simmons|Mind Gobliins
+Adeptus Mechanicus|Priority Assets|Perry Bates-Powell|Shut up Kyle
+Adeptus Mechanicus|Priority Assets|Brett Keable|Sofa Meta is Bad at Stuff
+Adeptus Mechanicus|Priority Assets|Samuel Martin|Team Sigil
+Adeptus Mechanicus|Priority Assets|Andy Ingram-Tedd|Webway Wanderers
+Adeptus Mechanicus|Purge the Foe|Stephen Platten|DeadRedGaming
+Adeptus Mechanicus|Reconnaissance|Richard Pharoah|Death Korps of Queens Road - Orca Squadron
+Adeptus Mechanicus|Reconnaissance|Michael Curnow|Finleys Angels
+Adeptus Mechanicus|Reconnaissance|Steve Boothroyd|Flapcats and Flackcannons
+Aeldari|Disruption|Matt Duncombe|Phoenix40k - Drooling Creatures
+Aeldari|Disruption|Neil Holman|Snake Eyes
+Aeldari|Priority Assets|Dan Zas|Polaris
+Aeldari|Reconnaissance|Matthew Norris|Carnage Chaos
+Aeldari|Reconnaissance|Philip Higgs|Death Korps of Queens Road, Honey Badgers
+Aeldari|Reconnaissance|Ross James|Krump or Dice Tryin'
+Aeldari|Reconnaissance|Dan W|PSSN: [L]ooming Table Flip
+Aeldari|Take and Hold|Adam Gill|[REDACTED]
+Aeldari|Take and Hold|Courtney Evetts|Webway Wanderers
+Astra Militarum|Priority Assets|Ryan Willett|Beasts of Buckingham
+Astra Militarum|Priority Assets|Cameron MacColl|Hobby Henchmen II
+Astra Militarum|Priority Assets|Chris Redfearn|Snake Eyes
+Astra Militarum|Purge the Foe|Warwick Smith|Live, Laugh, Lascannons
+Astra Militarum|Purge the Foe|Aaron Day|Polaris killer Bs
+Astra Militarum|Purge the Foe|Ross Small|Team Stonehammer
+Astra Militarum|Take and Hold|Will Gilbert|PSSN: [L]ooming Table Flip
+Astra Militarum|Take and Hold|Joshua Wood|Trash Wargaming
+Astra Militarum|Take and Hold|Albert Wright|Wet T-shirt saves
+Black Templars|Purge the Foe|Matt Lamacraft|Phoenix40k - Drooling Creatures
+Black Templars|Purge the Foe|Oliver Logan|Snake Eyes
+Blood Angels|Priority Assets|Reiss Jarvis|Sofa Meta
+Blood Angels|Priority Assets|Jordan Checkley|Vanguard Tactics
+Blood Angels|Purge the Foe|James Harrison|Cooked Green Dice
+Blood Angels|Purge the Foe|Dean Goldhawk|Krump or Dice Tryin'
+Blood Angels|Purge the Foe|Sir Chargealot|Shadowkeepers :: The Clueless
+Blood Angels|Purge the Foe|Sean Cook|The Minutemen 1
+Blood Angels|Reconnaissance|Jamie Payton|PSSN: Pile of Shame x LWG
+Blood Angels|Take and Hold|Nicolas Ballesteros|Fire and Dice - Targaryen
+Blood Angels|Take and Hold|Jordan Tilley|Phoenix40K - Outrageous Creatures
+Chaos Daemons|Disruption|Charlotte Kong|Death Korps of Queens Road, Honey Badgers
+Chaos Daemons|Disruption|Matt Smith|Webway Wanderers
+Chaos Daemons|Disruption|Will Johnson|Wet T-shirt saves
+Chaos Daemons|Purge the Foe|Corey Trumbley|Codex Creeps
+Chaos Daemons|Purge the Foe|Stephen Deare|DKQR - Frog
+Chaos Daemons|Purge the Foe|Byron Sidhu|Fire and Dice - Targaryen
+Chaos Daemons|Purge the Foe|Inder Bal|Fire and Dice - Tiger's eye
+Chaos Daemons|Purge the Foe|Jack Harrison|Low Rollers
+Chaos Daemons|Purge the Foe|Alex Walker|Sanguine Spanners
+Chaos Daemons|Reconnaissance|Stephen Heron|Black Herts
+Chaos Daemons|Reconnaissance|Christopher Langton|Carnage
+Chaos Daemons|Reconnaissance|Toby Bennett|Sofa Meta is Bad at Stuff
+Chaos Knights|Disruption|Rob Edwards|Forged In The Armoury
+Chaos Knights|Disruption|Josh Kent|Hobby Henchmen II
+Chaos Knights|Priority Assets|Daniel Benezra|Codex Creeps
+Chaos Knights|Priority Assets|Freddie Robinson|Hobby Henchmen I
+Chaos Knights|Purge the Foe|Darragh Magee|Adeptus Mancunian
+Chaos Knights|Purge the Foe|Christopher Ives|Beasts of Buckingham
+Chaos Knights|Reconnaissance|Ratnu Vaidya|DeadRedGaming
+Chaos Knights|Reconnaissance|Paolo Santarelli|Manaforge Games Derby
+Chaos Knights|Reconnaissance|Mark Sheard|Phoenix40k - Drooling Creatures
+Chaos Knights|Reconnaissance|James Climpson|Phoenix40K - Outrageous Creatures
+Chaos Knights|Reconnaissance|Kit Harvey-Lewis|Snake Eyes
+Chaos Knights|Reconnaissance|Ben Raven|Team YEET
+Chaos Knights|Reconnaissance|Blaise Galbraith|The Minutemen 2
+Chaos Knights|Take and Hold|Callum Byers|Sanguine Spanners
+Chaos Space Marines|Disruption|Christopher Axe|Blackwater Vikings Black
+Chaos Space Marines|Disruption|Jonathan Fequet|Codex Creeps
+Chaos Space Marines|Disruption|Finley Arbon-Donovan|Finleys Angels
+Chaos Space Marines|Disruption|Tom Briggs|Krump or Dice Tryin'
+Chaos Space Marines|Disruption|Sam Fisher|Manaforge Games Derby
+Chaos Space Marines|Disruption|Mark Main|Shadowkeepers :: The Chill
+Chaos Space Marines|Priority Assets|Matt Pocock|Flapcats and Flackcannons
+Chaos Space Marines|Priority Assets|Matthew Bunker|Tuesday Knights
+Chaos Space Marines|Priority Assets|John Swanston|TYPHOON
+Chaos Space Marines|Priority Assets|Connor Hulme|Zero On Primary
+Chaos Space Marines|Purge the Foe|Sam Dearman|Death Korps of Queens Road, Honey Badgers
+Chaos Space Marines|Purge the Foe|Ross Hilliard|Mind Gobliins
+Chaos Space Marines|Purge the Foe|Jamie Chapman|Mind Goblins
+Chaos Space Marines|Purge the Foe|Nathan Roberts|TFG Gaming
+Chaos Space Marines|Purge the Foe|Hubert Bialek|Wet T-shirt saves
+Chaos Space Marines|Reconnaissance|Samuel Smith|Fire and Dice - Targaryen
+Chaos Space Marines|Take and Hold|Arran Butters|Blackscar Gaming
+Chaos Space Marines|Take and Hold|Chris Enderby|PSSN: Pile of Shame x LWG
+Dark Angels|Disruption|Robert Quantrell|Blackwater Vikings Silver
+Dark Angels|Disruption|Adam Jehan|Blackwater Vikings Team Pink
+Dark Angels|Priority Assets|Cameron Clack|Blackwater Vikings Black
+Dark Angels|Priority Assets|charles shelley|Wet T-shirt saves
+Dark Angels|Reconnaissance|James Gascoine|[REDACTED]
+Dark Angels|Reconnaissance|Charles Gould|Ballers Brawlers
+Dark Angels|Reconnaissance|Louis Ballington|Mind Goblins
+Dark Angels|Reconnaissance|Ashley Farn|Trash Wargaming
+Dark Angels|Reconnaissance|Christopher Ridgers|Zero On Primary
+Dark Angels|Take and Hold|Jugrajveer Kundola|Flatcaps and flakcannons
+Death Guard|Disruption|Jono Graham|Adeptus Mancunian 1
+Death Guard|Disruption|Luke Cook|Ballers Brawlers
+Death Guard|Disruption|Lewis Etchells|BDK Gaming
+Death Guard|Disruption|Ben Hyde|Phoenix40k - Heinous Creatures
+Death Guard|Disruption|Alex Nicolic|Team Sigil
+Death Guard|Purge the Foe|Alfie Gavagan|Finleys Angels
+Death Guard|Take and Hold|Zan Rashid|Fire and Dice - Tiger's eye
+Death Guard|Take and Hold|Henry Taylor|Forged In The Armoury
+Death Guard|Take and Hold|Ben Matthews|Hobby Henchmen II
+Death Guard|Take and Hold|Jacob Kriegbaum|The Minutemen 1
+Death Guard|Take and Hold|Max Darby|Zero On Primary
+Deathwatch|Purge the Foe|Guy Miscampbell|PSSN: The Wizards of Odds
+Deathwatch|Purge the Foe|Chris Cho|Team Sigil
+Drukhari|Purge the Foe|Phil GC|Team YEET
+Drukhari|Reconnaissance|Matt Hucker|Beasts of Buckingham
+Drukhari|Reconnaissance|Tymon Jozefowski|Low Rollers
+Drukhari|Reconnaissance|Aneurin Brewer|PSSN: The Wizards of Odds
+Drukhari|Reconnaissance|Ryan Rees|Shadowkeepers :: The Clueless
+Drukhari|Reconnaissance|Alex Ford|The Sh[a]meful Suspects - PSSN
+Emperor's Children|Disruption|Jacob Whitehouse|Carnage Behemoth
+Emperor's Children|Disruption|Euan Bedford-Cooper|Fire and Dice - Targaryen
+Emperor's Children|Disruption|Mika Gawin|Flatcaps and flakcannons
+Emperor's Children|Disruption|Oliver Gaisford|Mind Goblins
+Emperor's Children|Disruption|Rowan Hesse|Polaris
+Emperor's Children|Disruption|Nikhil Talwar|PSSN: Pile of Shame x LWG
+Emperor's Children|Disruption|Josiah Tejeda|The Minutemen 2
+Emperor's Children|Disruption|Anthony Donaldson|TYPHOON
+Emperor's Children|Priority Assets|Alex Fleet|Blackwater Vikings Silver
+Emperor's Children|Priority Assets|Craig Bedford|Carnage
+Emperor's Children|Priority Assets|Mark Pilkington|DeadRedGaming
+Emperor's Children|Priority Assets|Luke Harris|Globo Gym
+Emperor's Children|Priority Assets|Douglas Fairfield|Low Rollers
+Emperor's Children|Priority Assets|DJ Inglis|Phoenix40k - Heinous Creatures
+Emperor's Children|Priority Assets|George Leathley|Sanguine Spanners
+Emperor's Children|Priority Assets|Rory Andrew|Team Stonehammer
+Emperor's Children|Priority Assets|Rafael Harbinson|TFG Gaming
+Emperor's Children|Purge the Foe|Jack Allen|Live and let dice
+Emperor's Children|Purge the Foe|Will Fowler|Phoenix40K - Outrageous Creatures
+Emperor's Children|Purge the Foe|Kyle Brady|Shut up Kyle
+Emperor's Children|Purge the Foe|Nick Zivtins|The Holy Hand Grenades
+Emperor's Children|Purge the Foe|Oliver Wheeler|Waaagh Boys
+Emperor's Children|Reconnaissance|Bertie G|Live, Laugh, Lascannons
+Emperor's Children|Reconnaissance|George Smith|Sofa Meta
+Emperor's Children|Reconnaissance|Edward Hearn|Team Sigil
+Emperor's Children|Reconnaissance|Sam Boardman|Vanguard Tactics
+Emperor's Children|Take and Hold|Tim Waters|PSSN: The Wizards of Odds
+Genestealer Cult|Disruption|Adam Stallwood|Fire and Dice - Tiger's eye
+Genestealer Cult|Disruption|Brant Wilson|Trash Wargaming
+Genestealer Cult|Reconnaissance|Sam Parker-Hully|Sanguine Spanners
+Genestealer Cult|Reconnaissance|Sean McQuaid|Tuesday Knights
+Grey Knights|Disruption|Eliot Osborne|[REDACTED]
+Grey Knights|Disruption|Nathan Cocker|DeadRedGaming
+Grey Knights|Disruption|Joe Shaw|Death Korps of Queens Road - Orca Squadron
+Grey Knights|Priority Assets|Rob Hassall|Death Korps of Queens Road, Honey Badgers
+Grey Knights|Priority Assets|Jack JC Chapman|Krump or Dice Tryin'
+Grey Knights|Priority Assets|Michael Westfall|The Minutemen 2
+Grey Knights|Purge the Foe|Kieran Taylor|Carnage Destruction
+Grey Knights|Purge the Foe|Michael Crawford-Jones|Hobby Henchmen I
+Grey Knights|Purge the Foe|Mike Keith|Sofa Meta
+Grey Knights|Purge the Foe|Jordan Penning|Tuesday Knights
+Grey Knights|Purge the Foe|Edward Perry|Tuesday Wizards
+Grey Knights|Take and Hold|Francisco Marquesini|Blackwater Vikings Black
+Grey Knights|Take and Hold|Jakob Sparrow|Snake Eyes
+Imperial Agents|Disruption|Jacob Wells|Carnage Chaos
+Imperial Agents|Disruption|Ross Tully|Hobby Henchmen I
+Imperial Knights|Disruption|Gordon Easingwood|Carnage Destruction
+Imperial Knights|Priority Assets|Finn Carter-Marsh|DKQR - Frog
+Imperial Knights|Priority Assets|Brian Griffin|Live, Laugh, Lascannons
+Imperial Knights|Priority Assets|Matthew Yeoh|PSSN: [L]ooming Table Flip
+Imperial Knights|Priority Assets|Tim Russell|Shadowkeepers :: The Chill
+Imperial Knights|Priority Assets|Steve Donn|Team YEET
+Imperial Knights|Priority Assets|Thomas Kusturin|The Minutemen 1
+Imperial Knights|Purge the Foe|Tim James|40Kasuals
+Imperial Knights|Purge the Foe|Ashley Blake|Black Herts
+Imperial Knights|Purge the Foe|Alex Nicoll|Blackwater Vikings Silver
+Imperial Knights|Purge the Foe|Jack Newland|Blackwater Vikings Team Pink
+Imperial Knights|Reconnaissance|Joe Gazzard|Cooked Green Dice
+Imperial Knights|Take and Hold|Lee Drinkall|Live and let dice
+Imperial Knights|Take and Hold|James Holland|Polaris killer Bs
+Leagues of Votann|Disruption|Bill Marvin|DKQR - Frog
+Leagues of Votann|Disruption|Alex Mee|Live and let dice
+Leagues of Votann|Disruption|Brock Duckworth|The Minutemen 1
+Leagues of Votann|Priority Assets|Ben Piddington|[REDACTED]
+Leagues of Votann|Priority Assets|Kyle Kitchen|BDK Gaming
+Leagues of Votann|Priority Assets|Phil Gill|Black Herts
+Leagues of Votann|Priority Assets|Joe Jackson|Forged In The Armoury
+Leagues of Votann|Priority Assets|Jamie Fowler|Krump or Dice Tryin' B Team
+Leagues of Votann|Priority Assets|Ollie Watts|PSSN: The Wizards of Odds
+Leagues of Votann|Priority Assets|Marcus Losty|Tuesday Wizards
+Leagues of Votann|Purge the Foe|Daniel Marshall|Phoenix40k - Heinous Creatures
+Leagues of Votann|Purge the Foe|Nathan Snelson|Trash Wargaming
+Leagues of Votann|Reconnaissance|Chippy Wesemael|Mind Gobliins
+Leagues of Votann|Reconnaissance|Ciaran Keen|Shadowkeepers :: The Chill
+Leagues of Votann|Take and Hold|Jo Cripps|40Kasuals
+Leagues of Votann|Take and Hold|Nick Hansen|Flapcats and Flackcannons
+Necrons|Disruption|James McMurray|Team Stonehammer
+Necrons|Priority Assets|Damian Corbett|40Kasuals
+Necrons|Priority Assets|Alfie Cox|Phoenix40k - Drooling Creatures
+Necrons|Purge the Foe|Richard Field|[REDACTED]
+Necrons|Purge the Foe|Scott Morris|Carnage
+Necrons|Purge the Foe|Kevin Davies|Carnage Behemoth
+Necrons|Purge the Foe|David Treadgold|Manaforge Games Derby
+Necrons|Purge the Foe|Stanley Peddle|TYPHOON
+Necrons|Reconnaissance|Luke Armstrong|Globo Gym
+Necrons|Reconnaissance|Dale Ahmed|Webway Wanderers
+Necrons|Reconnaissance|Aj Richardson|Wet T-shirt saves
+Necrons|Take and Hold|Toby Kan|Adeptus Mancunian 1
+Necrons|Take and Hold|Ben Stewart|BDK Gaming
+Necrons|Take and Hold|Chris Arlow|Black Herts
+Necrons|Take and Hold|Thomas Lumb|Carnage Destruction
+Necrons|Take and Hold|Sean Clancy|Codex Creeps
+Necrons|Take and Hold|Chris Lambert|Hobby Henchmen I
+Necrons|Take and Hold|Brett Armitage|TFG Gaming
+Necrons|Take and Hold|Alexandre Harnisch|Waaagh Boys
+Orks|Disruption|Piers Hunte-Dunne|Adeptus Mancunian
+Orks|Disruption|Tom Crook|Beasts of Buckingham
+Orks|Disruption|Benjamin Crowther|Low Rollers
+Orks|Disruption|Fintan Ryan|PSSN: [L]ooming Table Flip
+Orks|Disruption|Edward Shilcof|Shut up Kyle
+Orks|Disruption|Seth Bryan|Sofa Meta is Bad at Stuff
+Orks|Priority Assets|Josh Murphy|Blackscar Gaming
+Orks|Priority Assets|Chris Steel|The Holy Hand Grenades
+Orks|Purge the Foe|Andrew Thornton|Forged In The Armoury
+Orks|Reconnaissance|Sam Whymark|40Kasuals
+Orks|Take and Hold|Michael Glassock|Blackwater Vikings Team Pink
+Orks|Take and Hold|Chris Cuerden|Carnage
+Orks|Take and Hold|Callam Taylor-Deighton|Carnage Behemoth
+Orks|Take and Hold|Chris Taylor|Carnage Chaos
+Orks|Take and Hold|martin brown|Death Korps of Queens Road, Honey Badgers
+Orks|Take and Hold|Aaron Loftus|Finleys Angels
+Orks|Take and Hold|shawn Dominy|Globo Gym
+Orks|Take and Hold|Lewis Ferrari|Krump or Dice Tryin'
+Orks|Take and Hold|Dan Ford|Krump or Dice Tryin' B Team
+Orks|Take and Hold|Peter Bunce|Mind Gobliins
+Orks|Take and Hold|Vincent Stein|Team Sigil
+Orks|Take and Hold|Anthony Keen|The Sh[a]meful Suspects - PSSN
+Orks|Take and Hold|Graham Russell|Tuesday Knights
+Orks|Take and Hold|Ben Jones|Vanguard Tactics
+Space Marines (Astartes)|Disruption|Steve Hart|Black Herts
+Space Marines (Astartes)|Disruption|Mark Pocock|Flapcats and Flackcannons
+Space Marines (Astartes)|Disruption|Matthew Jemmerson|The Holy Hand Grenades
+Space Marines (Astartes)|Disruption|Matt Whiteley|The Sh[a]meful Suspects - PSSN
+Space Marines (Astartes)|Disruption|Dharminder Dhanda|Tuesday Wizards
+Space Marines (Astartes)|Priority Assets|Andy Plummer|Carnage Chaos
+Space Marines (Astartes)|Priority Assets|Nathan Gubbins|Death Korps of Queens Road - Orca Squadron
+Space Marines (Astartes)|Priority Assets|Jack Sharratt|Manaforge Games Derby
+Space Marines (Astartes)|Priority Assets|Alastair Marjoram|Polaris killer Bs
+Space Marines (Astartes)|Purge the Foe|James Wilson|Adeptus Mancunian 1
+Space Marines (Astartes)|Reconnaissance|Patrick Easingwood|Carnage Destruction
+Space Marines (Astartes)|Reconnaissance|John Bambridge|Codex Creeps
+Space Marines (Astartes)|Reconnaissance|Dan Gilbert|Fire and Dice - Tiger's eye
+Space Marines (Astartes)|Reconnaissance|Samuel Godding|Hobby Henchmen I
+Space Marines (Astartes)|Reconnaissance|Tom Noble|Live and let dice
+Space Marines (Astartes)|Reconnaissance|Jonathan Clarke|TFG Gaming
+Space Marines (Astartes)|Reconnaissance|Will B|TYPHOON
+Space Marines (Astartes)|Reconnaissance|Giulio Sinibaldi|Waaagh Boys
+Space Marines (Astartes)|Take and Hold|Sinhin Li|Adeptus Mancunian
+Space Marines (Astartes)|Take and Hold|Cameron Corbett|Beasts of Buckingham
+Space Marines (Astartes)|Take and Hold|Rohan Tesh|DKQR - Frog
+Space Marines (Astartes)|Take and Hold|Max DeBarr|Phoenix40k - Heinous Creatures
+Space Marines (Astartes)|Take and Hold|Noah Russell|Shadowkeepers :: The Chill
+Space Marines (Astartes)|Take and Hold|Andrew Downes|Shut up Kyle
+Space Marines (Astartes)|Take and Hold|Paul Edmonds|Sofa Meta is Bad at Stuff
+Space Wolves|Disruption|Gavin Abbott|40Kasuals
+Space Wolves|Disruption|Sudan Mcdade|Krump or Dice Tryin' B Team
+Space Wolves|Disruption|Aidan McDade|Live, Laugh, Lascannons
+T'au Empire|Disruption|James Hobbs|Vanguard Tactics
+T'au Empire|Priority Assets|Peter Guess|Adeptus Mancunian 1
+T'au Empire|Priority Assets|Kyle Grundy|Mind Goblins
+T'au Empire|Priority Assets|Daniel Woodhouse|Phoenix40K - Outrageous Creatures
+T'au Empire|Priority Assets|Sam Baber|Waaagh Boys
+T'au Empire|Purge the Foe|Carl Cooke|Ballers Brawlers
+T'au Empire|Purge the Foe|Matthew Coxon|BDK Gaming
+T'au Empire|Purge the Foe|Natalie Dodd|Flapcats and Flackcannons
+T'au Empire|Purge the Foe|Gee Hunter|Flatcaps and flakcannons
+T'au Empire|Purge the Foe|Nyran Grey|Krump or Dice Tryin' B Team
+T'au Empire|Purge the Foe|Geoffrey Stafford|Polaris
+T'au Empire|Purge the Foe|Christian Etheridge|Shadowkeepers :: The Chill
+T'au Empire|Purge the Foe|Luke Watson|Webway Wanderers
+T'au Empire|Reconnaissance|Chris Mcevoy|Adeptus Mancunian
+T'au Empire|Reconnaissance|Jack Quantrell|Blackwater Vikings Silver
+T'au Empire|Reconnaissance|Rusty Ashworth|Carnage Behemoth
+T'au Empire|Reconnaissance|Alexei de Berner|Hobby Henchmen II
+T'au Empire|Reconnaissance|Josh Tyler|Shut up Kyle
+T'au Empire|Reconnaissance|Joshua Rhodes|Team Stonehammer
+T'au Empire|Reconnaissance|Steven Timbers|The Holy Hand Grenades
+T'au Empire|Reconnaissance|Gary Maxwell|The Minutemen 1
+Thousand Sons|Disruption|Mathew Putney|Tuesday Knights
+Thousand Sons|Priority Assets|Jonny Crabtree|Ballers Brawlers
+Thousand Sons|Priority Assets|Ben Clark|Blackwater Vikings Team Pink
+Thousand Sons|Priority Assets|Joe Senior|Carnage Behemoth
+Thousand Sons|Priority Assets|Nathan Jukes|Carnage Destruction
+Thousand Sons|Priority Assets|Josh Hazelwood|Cooked Green Dice
+Thousand Sons|Priority Assets|Cayleb Langhals|The Sh[a]meful Suspects - PSSN
+Thousand Sons|Priority Assets|Callum Evans|Trash Wargaming
+Thousand Sons|Reconnaissance|Dom Ridley|Polaris
+Thousand Sons|Take and Hold|James Webster|DeadRedGaming
+Thousand Sons|Take and Hold|Louis Boote|Live, Laugh, Lascannons
+Thousand Sons|Take and Hold|Alex Parnall|Manaforge Games Derby
+Thousand Sons|Take and Hold|George Miller|Phoenix40k - Drooling Creatures
+Thousand Sons|Take and Hold|Ed Benson|Team YEET
+Thousand Sons|Take and Hold|Jonathan Causey|The Minutemen 2
+Tyranids|Disruption|Joseph Cocking|Blackscar Gaming
+Tyranids|Disruption|Matthew Langton|Carnage
+Tyranids|Disruption|James Wilson|Polaris killer Bs
+Tyranids|Disruption|Callum Watts|PSSN: The Wizards of Odds
+Tyranids|Disruption|Thomas Welsh|Sanguine Spanners
+Tyranids|Disruption|Daniel Lipscombe|Sofa Meta
+Tyranids|Disruption|Ben Hocking|TFG Gaming
+Tyranids|Disruption|Matthew Wilson|Zero On Primary
+Tyranids|Priority Assets|Oscar Luckin|PSSN: Pile of Shame x LWG
+Tyranids|Reconnaissance|Dan Jones|Adeptus Mancunian 1
+Tyranids|Reconnaissance|Mark Burke|BDK Gaming
+Tyranids|Reconnaissance|Rob McAllister|Blackwater Vikings Black
+Tyranids|Reconnaissance|Sean O'Connor|Blackwater Vikings Team Pink
+Tyranids|Reconnaissance|Adam Battle|Flatcaps and flakcannons
+Tyranids|Reconnaissance|Matt Fearn|Phoenix40k - Heinous Creatures
+Tyranids|Take and Hold|Nathan Osborne|Blackwater Vikings Silver
+Tyranids|Take and Hold|Scott Ogden|Cooked Green Dice
+Tyranids|Take and Hold|Martin Freeman|Death Korps of Queens Road - Orca Squadron
+Tyranids|Take and Hold|Jamie Paris|Shadowkeepers :: The Clueless
+World Eaters|Priority Assets|Nathaniel Sibley|Flatcaps and flakcannons
+World Eaters|Purge the Foe|Daniel Berris|Blackwater Vikings Black
+World Eaters|Purge the Foe|Ryan Rowe|Globo Gym
+World Eaters|Purge the Foe|Ben McCarthy|PSSN: [L]ooming Table Flip
+World Eaters|Purge the Foe|Francisco Parga|PSSN: Pile of Shame x LWG
+World Eaters|Purge the Foe|Adam Nicholson|Sofa Meta is Bad at Stuff
+World Eaters|Purge the Foe|Daniel Green|The Sh[a]meful Suspects - PSSN
+World Eaters|Reconnaissance|Jack Jackson-Savill|Forged In The Armoury`;
+
+  function parseRoster(raw) {
+    const teams = {};
+    raw.trim().split('\n').forEach(line => {
+      const [army, disposition, player, team] = line.split('|');
+      if (!teams[team]) teams[team] = [];
+      teams[team].push({ army, disposition, player });
+    });
+    return teams;
+  }
+
+  const TEAMS = parseRoster(ROSTER_RAW);
+
+  function scoreOf(myKey, oppArmy, oppDisposition) {
+    const a = ARMY_RATINGS[myKey][oppArmy] ?? 0;
+    const d = DISPOSITION_RATINGS[myKey][oppDisposition] ?? 0;
+    return { total: a + d, army: a, disposition: d };
+  }
+
+  function classFor(n) {
+    if (n >= 2) return 's2';
+    if (n === 1) return 's1';
+    if (n === 0) return 's0';
+    if (n === -1) return 'sm1';
+    return 'sm2';
+  }
+
+  function fmtSigned(n) {
+    return (n > 0 ? '+' : '') + n;
+  }
+
+  // best assignment: for n opponents (<=5), pick n of the 5 my-players (no repeats)
+  // maximizing total score. Small search space, brute forced recursively.
+  function bestAssignment(matrix, n) {
+    const used = new Array(5).fill(false);
+    let best = { score: -Infinity, assign: [] };
+    function recurse(oppIdx, assign, score) {
+      if (oppIdx === n) {
+        if (score > best.score) best = { score, assign: assign.slice() };
+        return;
+      }
+      for (let m = 0; m < 5; m++) {
+        if (used[m]) continue;
+        used[m] = true;
+        assign.push(m);
+        recurse(oppIdx + 1, assign, score + matrix[m][oppIdx].total);
+        assign.pop();
+        used[m] = false;
+      }
+    }
+    recurse(0, [], 0);
+    return best;
+  }
+
+  const select = document.getElementById('opponent');
+  const emptyEl = document.getElementById('empty');
+  const resultEl = document.getElementById('result');
+  const warnEl = document.getElementById('warn');
+  const lineupEl = document.getElementById('lineup');
+  const totalEl = document.getElementById('total');
+  const verdictEl = document.getElementById('verdict');
+  const matrixEl = document.getElementById('matrix');
+
+  Object.keys(TEAMS).filter(t => t !== MY_TEAM_NAME).sort((a, b) => a.localeCompare(b)).forEach(team => {
+    const opt = document.createElement('option');
+    opt.value = team;
+    opt.textContent = team;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener('change', () => {
+    const team = select.value;
+    if (!team) {
+      emptyEl.style.display = '';
+      resultEl.classList.remove('active');
+      warnEl.style.display = 'none';
+      return;
+    }
+    const opponents = TEAMS[team];
+    emptyEl.style.display = 'none';
+    resultEl.classList.add('active');
+
+    if (opponents.length !== 5) {
+      warnEl.style.display = '';
+      warnEl.textContent = `Incomplete roster in sheet: ${opponents.length}/5 players listed for this team.`;
+    } else {
+      warnEl.style.display = 'none';
+    }
+
+    const n = Math.min(5, opponents.length);
+    const matrix = MY_PLAYERS.map(mp => opponents.slice(0, n).map(op => scoreOf(mp.key, op.army, op.disposition)));
+    const { score: total, assign } = bestAssignment(matrix, n);
+
+    // recommended lineup
+    lineupEl.innerHTML = '';
+    for (let j = 0; j < n; j++) {
+      const myIdx = assign[j];
+      const mp = MY_PLAYERS[myIdx];
+      const op = opponents[j];
+      const s = matrix[myIdx][j];
+      const row = document.createElement('div');
+      row.className = 'lineup-row';
+      row.innerHTML = `
+        <div class="who us">
+          <span class="name">${mp.name}</span>
+          <span class="meta">${mp.army} · ${mp.disposition}</span>
+        </div>
+        <div class="vs">VS</div>
+        <div class="who them">
+          <span class="name">${op.player}</span>
+          <span class="meta">${op.army} · ${op.disposition}</span>
+        </div>
+        <div class="score-pill ${classFor(s.total)}">${fmtSigned(s.total)}</div>
+      `;
+      lineupEl.appendChild(row);
+    }
+    if (n < 5) {
+      const note = document.createElement('div');
+      note.className = 'lineup-row';
+      note.innerHTML = `<div class="who us"><span class="meta">${5 - n} of our players have no opponent listed for this team.</span></div><div></div><div></div><div></div>`;
+      lineupEl.appendChild(note);
+    }
+
+    totalEl.textContent = fmtSigned(total);
+    totalEl.className = 'value ' + (total > 0 ? '' : '');
+    if (total >= 3) verdictEl.textContent = 'Strongly favourable matchup';
+    else if (total >= 1) verdictEl.textContent = 'Favourable matchup';
+    else if (total === 0) verdictEl.textContent = 'Even matchup';
+    else if (total >= -2) verdictEl.textContent = 'Unfavourable matchup';
+    else verdictEl.textContent = 'Uphill battle';
+
+    // matrix
+    let thead = '<thead><tr><th class="corner"></th>' + opponents.slice(0, n).map(op =>
+      `<th><span class="pname">${op.player}</span><span class="pmeta">${op.army}</span><span class="pmeta">${op.disposition}</span></th>`
+    ).join('') + '</tr></thead>';
+
+    let tbody = '<tbody>' + MY_PLAYERS.map((mp, i) => {
+      const cells = matrix[i].map((s, j) => {
+        const picked = assign[j] === i ? ' picked' : '';
+        return `<td class="cell ${classFor(s.total)}${picked}"><span class="tot">${fmtSigned(s.total)}</span><span class="brk">army ${fmtSigned(s.army)} · disp ${fmtSigned(s.disposition)}</span></td>`;
+      }).join('');
+      return `<tr><th><span class="pname">${mp.name}</span><span class="pmeta">${mp.army} · ${mp.disposition}</span></th>${cells}</tr>`;
+    }).join('') + '</tbody>';
+
+    matrixEl.innerHTML = thead + tbody;
+  });
+})();
+</script>
