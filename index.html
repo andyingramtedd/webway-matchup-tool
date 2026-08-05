@@ -1,871 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>Webway Wanderers — Pairing Dossier</title>
 <style>
   :root {
-    --bg: #f1eee5;
-    --surface: #ffffff;
-    --surface-2: #e8e3d5;
-    --ink: #1c1a15;
-    --ink-dim: #6b6455;
-    --line: rgba(28,26,21,0.14);
-    --accent: #8a5a20;
-    --accent-ink: #ffffff;
-    --good-2: #1f6b48;
-    --good-1: #4c8f6c;
-    --bad-2: #97372f;
-    --bad-1: #b56a5f;
-    --neutral: #8f8878;
-    --font-display: "Segoe UI", "Arial Narrow", ui-sans-serif, sans-serif;
+    --bg: #10161d;
+    --surface: #161d26;
+    --surface-2: #1e2733;
+    --ink: #eaf1f0;
+    --ink-dim: #8fa3a8;
+    --line: rgba(234,241,240,0.12);
+    --accent: #35b0bb;        /* teal, from logo wordmark */
+    --accent-ink: #06181a;
+    --accent2: #e0bf5c;       /* gold, from logo subtitle */
+    --good-2: #2f9e6e;
+    --good-1: #3f7a63;
+    --bad-2: #d9564c;
+    --bad-1: #8a4a45;
+    --neutral: #566067;
+    --font-display: ui-sans-serif, "Segoe UI Semibold", "Arial Narrow", sans-serif;
     --font-body: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
     --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    --nav-w: 260px;
   }
-  @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: light) {
     :root {
-      --bg: #14161a;
-      --surface: #1b1e23;
-      --surface-2: #23272e;
-      --ink: #ecebe5;
-      --ink-dim: #9a9585;
-      --line: rgba(236,235,229,0.12);
-      --accent: #c99a4e;
-      --accent-ink: #14161a;
-      --good-2: #4fae82;
-      --good-1: #3a6f56;
-      --bad-2: #e0685c;
-      --bad-1: #8f4842;
-      --neutral: #565148;
+      --bg: #eef2f2; --surface: #ffffff; --surface-2: #e3ebea; --ink: #10191b; --ink-dim: #55666a;
+      --line: rgba(16,25,27,0.14); --accent: #167b86; --accent-ink: #ffffff; --accent2: #96731c;
+      --good-2: #1f6b48; --good-1: #4c8f6c; --bad-2: #97372f; --bad-1: #b56a5f; --neutral: #8f9a9c;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #14161a; --surface: #1b1e23; --surface-2: #23272e; --ink: #ecebe5; --ink-dim: #9a9585;
-    --line: rgba(236,235,229,0.12); --accent: #c99a4e; --accent-ink: #14161a;
-    --good-2: #4fae82; --good-1: #3a6f56; --bad-2: #e0685c; --bad-1: #8f4842; --neutral: #565148;
+    --bg: #10161d; --surface: #161d26; --surface-2: #1e2733; --ink: #eaf1f0; --ink-dim: #8fa3a8;
+    --line: rgba(234,241,240,0.12); --accent: #35b0bb; --accent-ink: #06181a; --accent2: #e0bf5c;
+    --good-2: #2f9e6e; --good-1: #3f7a63; --bad-2: #d9564c; --bad-1: #8a4a45; --neutral: #566067;
   }
   :root[data-theme="light"] {
-    --bg: #f1eee5; --surface: #ffffff; --surface-2: #e8e3d5; --ink: #1c1a15; --ink-dim: #6b6455;
-    --line: rgba(28,26,21,0.14); --accent: #8a5a20; --accent-ink: #ffffff;
-    --good-2: #1f6b48; --good-1: #4c8f6c; --bad-2: #97372f; --bad-1: #b56a5f; --neutral: #8f8878;
+    --bg: #eef2f2; --surface: #ffffff; --surface-2: #e3ebea; --ink: #10191b; --ink-dim: #55666a;
+    --line: rgba(16,25,27,0.14); --accent: #167b86; --accent-ink: #ffffff; --accent2: #96731c;
+    --good-2: #1f6b48; --good-1: #4c8f6c; --bad-2: #97372f; --bad-1: #b56a5f; --neutral: #8f9a9c;
   }
 
   * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
   body {
-    margin: 0;
     background: var(--bg);
     color: var(--ink);
     font-family: var(--font-body);
     line-height: 1.4;
+    overflow-x: hidden;
   }
-  .wrap {
-    max-width: 1040px;
-    margin: 0 auto;
-    padding: 28px 20px 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-  }
+  a { color: inherit; }
+  button { font-family: inherit; }
 
-  /* header */
-  header {
+  /* ---------- header / nav ---------- */
+  header.topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface);
     border-bottom: 2px solid var(--ink);
-    padding-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
   }
-  .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 700;
+  .hamburger {
+    width: 40px; height: 40px; flex: none;
+    background: transparent; border: 1px solid var(--line); color: var(--ink);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
-  h1 {
-    font-family: var(--font-display);
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    font-size: clamp(26px, 4.2vw, 38px);
-    margin: 0;
-    text-wrap: balance;
+  .hamburger span, .hamburger::before, .hamburger::after { content: ""; display: block; width: 18px; height: 2px; background: var(--ink); }
+  .hamburger { flex-direction: column; gap: 4px; }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand-logo {
+    width: 38px; height: 38px; flex: none; border-radius: 6px;
+    object-fit: cover; background: var(--surface-2); border: 1px solid var(--line);
   }
-  .sub {
-    color: var(--ink-dim);
-    font-size: 14px;
-    max-width: 60ch;
+  .brand-text { display: flex; flex-direction: column; min-width: 0; }
+  .brand-eyebrow {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent2); font-weight: 700;
+  }
+  .brand-name {
+    font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: 0.01em;
+    background: linear-gradient(90deg, var(--accent), #7fd8de);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sync-dot {
+    margin-left: auto; width: 10px; height: 10px; border-radius: 50%; flex: none;
+    background: var(--neutral); border: 1px solid var(--line);
+  }
+  .sync-dot.on { background: var(--good-2); }
+  .sync-dot.off { background: var(--accent2); }
+
+  .nav-scrim {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 29;
+    opacity: 0; pointer-events: none; transition: opacity .15s ease;
+  }
+  .nav-scrim.open { opacity: 1; pointer-events: auto; }
+  nav.drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; width: var(--nav-w); z-index: 30;
+    background: var(--surface); border-right: 1px solid var(--line);
+    transform: translateX(-100%); transition: transform .18s ease;
+    display: flex; flex-direction: column; padding: 16px 0;
+  }
+  nav.drawer.open { transform: translateX(0); }
+  nav.drawer a {
+    display: block; padding: 14px 20px; text-decoration: none; color: var(--ink);
+    font-weight: 700; font-size: 15px; border-left: 3px solid transparent;
+  }
+  nav.drawer a.active { color: var(--accent); border-left-color: var(--accent); background: var(--surface-2); }
+  nav.drawer .drawer-title {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-dim); padding: 4px 20px 12px;
   }
 
-  /* opponent picker */
+  main { max-width: 1040px; margin: 0 auto; padding: 20px 16px 80px; }
+  .view { display: none; flex-direction: column; gap: 20px; }
+  .view.active { display: flex; }
+
+  h2.section-title {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-dim); display: flex; align-items: center; gap: 10px; margin: 0;
+  }
+  h2.section-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
   .picker {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--line); padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
-  .picker label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-    white-space: nowrap;
-  }
+  .picker label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); white-space: nowrap; }
   select {
-    flex: 1;
-    min-width: 220px;
-    font-family: var(--font-body);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ink);
-    background: var(--surface);
-    border: 1px solid var(--ink);
-    padding: 10px 12px;
+    flex: 1; min-width: 200px; font-family: var(--font-body); font-size: 16px; font-weight: 600;
+    color: var(--ink); background: var(--surface); border: 1px solid var(--ink); padding: 10px 12px;
     appearance: none;
     background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
     background-position: calc(100% - 20px) center, calc(100% - 15px) center;
-    background-size: 5px 5px, 5px 5px;
-    background-repeat: no-repeat;
+    background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
   }
-  select:focus-visible, button:focus-visible, summary:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .warn {
-    font-size: 12px;
-    color: var(--bad-2);
-    font-weight: 600;
-  }
+  select:focus-visible, button:focus-visible, summary:focus-visible, .hamburger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .warn { font-size: 12px; color: var(--bad-2); font-weight: 600; }
+  .empty { border: 1px dashed var(--line); padding: 36px 20px; text-align: center; color: var(--ink-dim); font-size: 14px; }
 
-  /* empty state */
-  .empty {
-    border: 1px dashed var(--line);
-    padding: 40px 20px;
-    text-align: center;
-    color: var(--ink-dim);
-    font-size: 14px;
+  /* team scouting card */
+  .team-card {
+    background: var(--surface); border: 1px solid var(--line); padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 8px;
   }
+  .team-card .row1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .team-card .name { font-weight: 800; font-size: 17px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 11px; padding: 2px 8px; border: 1px solid var(--line);
+    color: var(--ink-dim); white-space: nowrap;
+  }
+  .chip.strong { color: var(--good-2); border-color: var(--good-2); }
+  .team-card summary { cursor: pointer; font-size: 12.5px; color: var(--accent); }
+  .team-card .note { font-size: 13px; color: var(--ink-dim); margin-top: 6px; }
 
-  #result { display: none; flex-direction: column; gap: 22px; }
-  #result.active { display: flex; }
-
-  /* section titles */
-  .section-title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-  }
-  .section-title::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  /* recommended lineup */
-  .lineup {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--line);
-    background: var(--surface);
-  }
-  .lineup-row {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr auto;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
-  }
+  /* lineup */
+  .lineup { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--surface); }
+  .lineup-row { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
   .lineup-row:last-of-type { border-bottom: none; }
+  .lineup-top { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 12px; }
   .who { display: flex; flex-direction: column; gap: 2px; }
   .who .name { font-weight: 700; font-size: 15px; }
   .who .meta { font-size: 12px; color: var(--ink-dim); }
   .who.them { text-align: right; }
-  .vs {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink-dim);
-    text-align: center;
-  }
+  .vs { font-family: var(--font-mono); font-size: 11px; color: var(--ink-dim); text-align: center; }
   .score-pill {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-    min-width: 40px;
-    text-align: center;
-    padding: 4px 8px;
-    border: 1px solid var(--line);
-    justify-self: center;
+    font-family: var(--font-mono); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums;
+    min-width: 40px; text-align: center; padding: 4px 8px; border: 1px solid var(--line); justify-self: center;
   }
   .score-pill.s2 { background: var(--good-2); color: #fff; border-color: var(--good-2); }
   .score-pill.s1 { background: var(--good-1); color: #fff; border-color: var(--good-1); }
   .score-pill.s0 { background: var(--surface-2); color: var(--ink); }
   .score-pill.sm1 { background: var(--bad-1); color: #fff; border-color: var(--bad-1); }
   .score-pill.sm2 { background: var(--bad-2); color: #fff; border-color: var(--bad-2); }
+  .scout-line { display: flex; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--ink-dim); }
+  .scout-line details { flex-basis: 100%; }
+  .scout-line summary { cursor: pointer; color: var(--accent); font-size: 12px; }
+  .scout-line .comment { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; }
 
-  .totalbar {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: var(--surface-2);
-    border-top: 2px solid var(--ink);
-  }
+  .totalbar { display: flex; align-items: baseline; justify-content: space-between; padding: 14px 16px; background: var(--surface-2); border-top: 2px solid var(--ink); }
   .totalbar .label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
   .totalbar .value { font-family: var(--font-mono); font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
   .verdict { font-size: 13px; color: var(--ink-dim); margin-top: 2px; }
 
-  /* matrix */
   .matrix-scroll { overflow-x: auto; border: 1px solid var(--line); }
   table.matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
-  table.matrix th, table.matrix td {
-    border: 1px solid var(--line);
-    padding: 8px 10px;
-    font-size: 12px;
-    text-align: center;
-    vertical-align: middle;
-  }
-  table.matrix thead th {
-    background: var(--surface-2);
-    font-weight: 700;
-  }
+  table.matrix th, table.matrix td { border: 1px solid var(--line); padding: 8px 10px; font-size: 12px; text-align: center; vertical-align: middle; }
+  table.matrix thead th { background: var(--surface-2); font-weight: 700; }
   table.matrix th.corner { background: var(--surface); border: none; }
   table.matrix th .pname { font-size: 13px; font-weight: 800; display: block; }
-  table.matrix th .pmeta { font-size: 10.5px; color: var(--ink-dim); font-weight: 500; text-transform: none; letter-spacing: 0; display: block; margin-top: 2px; }
-  table.matrix tbody th {
-    background: var(--surface-2);
-    text-align: left;
-    white-space: nowrap;
-  }
-  td.cell {
-    font-family: var(--font-mono);
-    background: var(--surface);
-  }
-  td.cell .tot {
-    font-size: 15px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-  }
-  td.cell .brk {
-    font-size: 9.5px;
-    color: var(--ink-dim);
-    display: block;
-    margin-top: 1px;
-  }
-  td.cell.s2 { color: var(--good-2); }
-  td.cell.s1 { color: var(--good-1); }
-  td.cell.s0 { color: var(--ink-dim); }
-  td.cell.sm1 { color: var(--bad-1); }
-  td.cell.sm2 { color: var(--bad-2); }
-  td.cell.picked {
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
-    background: color-mix(in srgb, var(--accent) 12%, var(--surface));
-  }
+  table.matrix th .pmeta { font-size: 10.5px; color: var(--ink-dim); font-weight: 500; display: block; margin-top: 2px; }
+  table.matrix tbody th { background: var(--surface-2); text-align: left; white-space: nowrap; }
+  td.cell { font-family: var(--font-mono); background: var(--surface); }
+  td.cell .tot { font-size: 15px; font-weight: 800; }
+  td.cell .brk { font-size: 9.5px; color: var(--ink-dim); display: block; margin-top: 1px; }
+  td.cell.s2 { color: var(--good-2); } td.cell.s1 { color: var(--good-1); } td.cell.s0 { color: var(--ink-dim); }
+  td.cell.sm1 { color: var(--bad-1); } td.cell.sm2 { color: var(--bad-2); }
+  td.cell.picked { outline: 2px solid var(--accent2); outline-offset: -2px; background: color-mix(in srgb, var(--accent2) 14%, var(--surface)); }
 
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 11.5px;
-    color: var(--ink-dim);
-  }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-dim); }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
   .swatch { width: 10px; height: 10px; display: inline-block; }
 
-  footer {
-    font-size: 11px;
-    color: var(--ink-dim);
-    text-align: center;
-    padding-top: 10px;
+  footer.page-foot { font-size: 11px; color: var(--ink-dim); text-align: center; padding-top: 10px; }
+
+  /* ---------- Team Setup ---------- */
+  .who-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+  .who-btn {
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink);
+    padding: 10px 16px; font-weight: 700; font-size: 14px; cursor: pointer;
   }
+  .who-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .tap-grid { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--surface); }
+  .tap-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+  .tap-row:last-child { border-bottom: none; }
+  .tap-row .label { font-weight: 600; font-size: 14.5px; }
+  .tap-btn {
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 9px 14px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-dim);
+    cursor: pointer; min-width: 68px;
+  }
+  .tap-btn.weak.active { background: var(--bad-2); color: #fff; border-color: var(--bad-2); }
+  .tap-btn.strong.active { background: var(--good-2); color: #fff; border-color: var(--good-2); }
+  .setup-note { font-size: 12.5px; color: var(--ink-dim); }
+  .save-flash { font-size: 12px; color: var(--good-2); font-weight: 700; opacity: 0; transition: opacity .3s; }
+  .save-flash.show { opacity: 1; }
+
+  /* ---------- Advanced wizard ---------- */
+  .wiz-progress { display: flex; gap: 6px; }
+  .wiz-progress .dot { flex: 1; height: 4px; background: var(--line); }
+  .wiz-progress .dot.done { background: var(--good-2); }
+  .wiz-progress .dot.now { background: var(--accent2); }
+  .wiz-card { background: var(--surface); border: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .wiz-phase { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); }
+  .wiz-question { font-size: 16px; font-weight: 700; }
+  .wiz-help { font-size: 12.5px; color: var(--ink-dim); }
+  .wiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .wiz-opt {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--surface-2); border: 1px solid var(--line); padding: 12px 14px; cursor: pointer; text-align: left;
+  }
+  .wiz-opt:hover { border-color: var(--accent); }
+  .wiz-opt.recommended { border-color: var(--accent2); box-shadow: inset 0 0 0 1px var(--accent2); }
+  .wiz-opt .opt-name { font-weight: 700; font-size: 14.5px; }
+  .wiz-opt .opt-meta { font-size: 11.5px; color: var(--ink-dim); }
+  .wiz-opt .opt-score { font-family: var(--font-mono); font-weight: 800; font-size: 15px; }
+  .wiz-tag { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent2); }
+  .wiz-locked { display: flex; flex-direction: column; gap: 6px; }
+  .wiz-locked-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--line); }
+  .wiz-actions { display: flex; gap: 10px; }
+  .btn {
+    font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em;
+    padding: 10px 16px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer;
+  }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
+</head>
+<body>
 
-<div class="wrap">
-  <header>
-    <div class="eyebrow">UKTC Teams — Round Pairing Dossier</div>
-    <h1>Webway Wanderers</h1>
-    <div class="sub">Select your round opponent. Their five operatives and force dispositions load automatically, scored against our roster to surface the pairing order that gives us the best shot.</div>
-  </header>
-
-  <div class="picker">
-    <label for="opponent">Opponent</label>
-    <select id="opponent">
-      <option value="">— choose a team —</option>
-    </select>
-    <span class="warn" id="warn" style="display:none;"></span>
+<header class="topbar">
+  <button class="hamburger" id="navToggle" aria-label="Open menu"></button>
+  <div class="brand">
+    <img class="brand-logo" id="brandLogo" src="./logo.png" alt="" onerror="this.style.display='none'" />
+    <div class="brand-text">
+      <span class="brand-eyebrow">UKTC Teams &middot; Round Dossier</span>
+      <span class="brand-name">Webway Wanderers</span>
+    </div>
   </div>
+  <span class="sync-dot" id="syncDot" title="Checking live sync..."></span>
+</header>
 
-  <div class="empty" id="empty">Pick an opponent above to generate the pairing recommendation.</div>
+<div class="nav-scrim" id="navScrim"></div>
+<nav class="drawer" id="navDrawer">
+  <div class="drawer-title">Navigate</div>
+  <a href="#matchup" data-route="matchup">Matchup</a>
+  <a href="#advanced" data-route="advanced">Advanced Matchup</a>
+  <a href="#setup" data-route="setup">Team Setup</a>
+</nav>
 
-  <div id="result">
-    <section>
-      <h2 class="section-title">Recommended pairing order</h2>
-      <div class="lineup" id="lineup"></div>
-      <div class="totalbar">
-        <div>
-          <div class="label">Projected total</div>
-          <div class="verdict" id="verdict"></div>
+<main>
+
+  <!-- ============ MATCHUP VIEW ============ -->
+  <section class="view" id="view-matchup">
+    <div class="picker">
+      <label for="opponentSelect">Opponent</label>
+      <select id="opponentSelect"><option value="">— choose a team —</option></select>
+      <span class="warn" id="matchupWarn" style="display:none;"></span>
+    </div>
+
+    <div class="empty" id="matchupEmpty">Pick an opponent above to generate the pairing recommendation.</div>
+
+    <div id="matchupResult" style="display:none; flex-direction:column; gap:20px;">
+      <div class="team-card" id="teamCard"></div>
+
+      <section>
+        <h2 class="section-title">Recommended pairing order</h2>
+        <div class="lineup" id="lineup"></div>
+        <div class="totalbar">
+          <div><div class="label">Projected total</div><div class="verdict" id="verdict"></div></div>
+          <div class="value" id="total"></div>
         </div>
-        <div class="value" id="total"></div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <h2 class="section-title">Full matchup matrix</h2>
-      <div class="matrix-scroll">
-        <table class="matrix" id="matrix"></table>
-      </div>
-      <div class="legend">
-        <span><span class="swatch" style="background:var(--good-2)"></span> +2 strong</span>
-        <span><span class="swatch" style="background:var(--good-1)"></span> +1 favoured</span>
-        <span><span class="swatch" style="background:var(--surface-2)"></span> 0 even</span>
-        <span><span class="swatch" style="background:var(--bad-1)"></span> -1 unfavoured</span>
-        <span><span class="swatch" style="background:var(--bad-2)"></span> -2 weak</span>
-        <span>Highlighted cell = recommended pairing. Score = army matchup + disposition matchup.</span>
-      </div>
-    </section>
-  </div>
+      <section>
+        <h2 class="section-title">Full matchup matrix</h2>
+        <div class="matrix-scroll"><table class="matrix" id="matrix"></table></div>
+        <div class="legend">
+          <span><span class="swatch" style="background:var(--good-2)"></span> +2 strong</span>
+          <span><span class="swatch" style="background:var(--good-1)"></span> +1 favoured</span>
+          <span><span class="swatch" style="background:var(--surface-2)"></span> 0 even</span>
+          <span><span class="swatch" style="background:var(--bad-1)"></span> -1 unfavoured</span>
+          <span><span class="swatch" style="background:var(--bad-2)"></span> -2 weak</span>
+          <span>Score = army matchup + disposition matchup. Gold outline = recommended pairing.</span>
+        </div>
+      </section>
+    </div>
+  </section>
 
-  <footer>Ratings are your own strong/weak calls per army and per Force Disposition. Matrix is a planning aid for the live pairing draft, not a binding lock.</footer>
-</div>
+  <!-- ============ ADVANCED MATCHUP VIEW ============ -->
+  <section class="view" id="view-advanced">
+    <div class="picker">
+      <label for="advOpponentSelect">Opponent</label>
+      <select id="advOpponentSelect"><option value="">— choose a team —</option></select>
+    </div>
+    <div class="empty" id="advEmpty">Pick an opponent to start the live pairing wizard. This walks the Initial Skirmish and Main Engagement sequence from the official Teams Event Companion, step by step, recommending your best pick at each stage.</div>
+    <div id="advBody" style="display:none; flex-direction:column; gap:16px;"></div>
+  </section>
 
-<script>
-(function () {
-  const MY_TEAM_NAME = "Webway Wanderers";
+  <!-- ============ TEAM SETUP VIEW ============ -->
+  <section class="view" id="view-setup">
+    <h2 class="section-title">Who are you?</h2>
+    <div class="who-picker" id="whoPicker"></div>
+    <div id="setupBody" style="display:none; flex-direction:column; gap:20px;"></div>
+    <div class="empty" id="setupEmpty">Tap your name above to set your army and disposition preferences.</div>
+  </section>
 
-  const MY_PLAYERS = [
-    { key: 'luke', name: 'Luke Watson', army: "T'au Empire", disposition: 'Purge the Foe' },
-    { key: 'court', name: 'Courtney Evetts', army: 'Aeldari', disposition: 'Take and Hold' },
-    { key: 'andy', name: 'Andy Ingram-Tedd', army: 'Adeptus Mechanicus', disposition: 'Priority Assets' },
-    { key: 'dale', name: 'Dale Ahmed', army: 'Necrons', disposition: 'Reconnaissance' },
-    { key: 'matt', name: 'Matt Smith', army: 'Chaos Daemons', disposition: 'Disruption' }
-  ];
+</main>
 
-  const ARMY_RATINGS = {
-    luke:  {"Emperor's Children":1,"Space Marines (Astartes)":1,"Orks":0,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":1,"Thousand Sons":1,"Chaos Knights":0,"Imperial Knights":0,"Grey Knights":-1,"Chaos Daemons":1,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":-1,"Drukhari":1,"Genestealer Cult":1,"Space Wolves":-1,"Black Templars":0,"Deathwatch":-1,"Imperial Agents":0},
-    court: {"Emperor's Children":1,"Space Marines (Astartes)":-1,"Orks":0,"Adeptus Custodes":1,"T'au Empire":-1,"Necrons":0,"Tyranids":1,"Chaos Space Marines":0,"Leagues of Votann":-1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":1,"Adeptus Mechanicus":-1,"Death Guard":0,"Dark Angels":1,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":0,"World Eaters":-1,"Drukhari":-1,"Genestealer Cult":-1,"Space Wolves":0,"Black Templars":1,"Deathwatch":1,"Imperial Agents":0},
-    andy:  {"Emperor's Children":0,"Space Marines (Astartes)":0,"Orks":-1,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":-1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":0,"Thousand Sons":0,"Chaos Knights":1,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":1,"Astra Militarum":1,"Blood Angels":0,"World Eaters":1,"Drukhari":0,"Genestealer Cult":-1,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0},
-    dale:  {"Emperor's Children":1,"Space Marines (Astartes)":0,"Orks":1,"Adeptus Custodes":-1,"T'au Empire":-1,"Necrons":0,"Tyranids":0,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":-1,"Imperial Knights":-1,"Grey Knights":0,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":1,"World Eaters":1,"Drukhari":-1,"Genestealer Cult":0,"Space Wolves":-1,"Black Templars":0,"Deathwatch":0,"Imperial Agents":0},
-    matt:  {"Emperor's Children":-1,"Space Marines (Astartes)":1,"Orks":1,"Adeptus Custodes":0,"T'au Empire":-1,"Necrons":-1,"Tyranids":1,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":1,"Drukhari":1,"Genestealer Cult":0,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0}
-  };
+<footer class="page-foot">Ratings are your own strong/weak calls. Planning aid for the live pairing process, not a binding lock.</footer>
 
-  const DISPOSITION_RATINGS = {
-    luke:  {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0},
-    court: {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":0,"Disruption":1},
-    andy:  {"Purge the Foe":1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":-1,"Disruption":-1},
-    dale:  {"Purge the Foe":-1,"Take and Hold":0,"Priority Assets":1,"Reconnaissance":0,"Disruption":1},
-    matt:  {"Purge the Foe":1,"Take and Hold":-1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0}
-  };
+<script type="module">
+// ============================================================================
+// DATA: static roster + rating defaults
+// ============================================================================
+const MY_TEAM_NAME = "Webway Wanderers";
 
-  const ROSTER_RAW = `Adepta Sororitas|Priority Assets|Anton Trussell|Finleys Angels
-Adepta Sororitas|Priority Assets|Thomas Douch|Fire and Dice - Targaryen
-Adepta Sororitas|Priority Assets|Samir Sydykov|Fire and Dice - Tiger's eye
-Adepta Sororitas|Priority Assets|Luke Alderson-Fletcher|Shadowkeepers :: The Clueless
-Adepta Sororitas|Reconnaissance|Tom Balmforth|Blackscar Gaming
-Adepta Sororitas|Reconnaissance|Dave Skinner|Polaris killer Bs
-Adepta Sororitas|Take and Hold|Shaun Turner|Sofa Meta
-Adepta Sororitas|Take and Hold|Doug Tabor|Team Stonehammer
-Adepta Sororitas|Take and Hold|Matt Puffett|Tuesday Wizards
-Adeptus Custodes|Disruption|Steve Ashby|Cooked Green Dice
-Adeptus Custodes|Disruption|Aidan Brocklehurst|Mind Gobliins
-Adeptus Custodes|Disruption|matthew Doar|Phoenix40K - Outrageous Creatures
-Adeptus Custodes|Disruption|George Ford|Shadowkeepers :: The Clueless
-Adeptus Custodes|Disruption|Alexander Thomson|Team YEET
-Adeptus Custodes|Disruption|Edward Muir|Waaagh Boys
-Adeptus Custodes|Priority Assets|Sam Sanders|Live and let dice
-Adeptus Custodes|Purge the Foe|Nate Waite|Blackscar Gaming
-Adeptus Custodes|Purge the Foe|Ed Paszek|Carnage Chaos
-Adeptus Custodes|Purge the Foe|Oliver Steer|Death Korps of Queens Road - Orca Squadron
-Adeptus Custodes|Purge the Foe|Max Berry|Hobby Henchmen II
-Adeptus Custodes|Purge the Foe|John Schmidt|The Minutemen 2
-Adeptus Custodes|Purge the Foe|Stephen Box|Vanguard Tactics
-Adeptus Custodes|Purge the Foe|Olly Hayter|Zero On Primary
-Adeptus Custodes|Reconnaissance|Chris Boulton|DKQR - Frog
-Adeptus Custodes|Reconnaissance|Karl Sumner|Krump or Dice Tryin' B Team
-Adeptus Custodes|Reconnaissance|Chong Liu|Tuesday Wizards
-Adeptus Custodes|Take and Hold|James Evans|Ballers Brawlers
-Adeptus Custodes|Take and Hold|Rob Willars|Low Rollers
-Adeptus Custodes|Take and Hold|Dom Maidlow|Mind Goblins
-Adeptus Custodes|Take and Hold|Tel Hunt|Polaris
-Adeptus Custodes|Take and Hold|Dan Jemmerson|The Holy Hand Grenades
-Adeptus Custodes|Take and Hold|Jack Pugh|TYPHOON
-Adeptus Mechanicus|Disruption|Kyle Beauly|Globo Gym
-Adeptus Mechanicus|Priority Assets|Harry Saunderson|Adeptus Mancunian
-Adeptus Mechanicus|Priority Assets|Jonny Simmons|Mind Gobliins
-Adeptus Mechanicus|Priority Assets|Perry Bates-Powell|Shut up Kyle
-Adeptus Mechanicus|Priority Assets|Brett Keable|Sofa Meta is Bad at Stuff
-Adeptus Mechanicus|Priority Assets|Samuel Martin|Team Sigil
-Adeptus Mechanicus|Priority Assets|Andy Ingram-Tedd|Webway Wanderers
-Adeptus Mechanicus|Purge the Foe|Stephen Platten|DeadRedGaming
-Adeptus Mechanicus|Reconnaissance|Richard Pharoah|Death Korps of Queens Road - Orca Squadron
-Adeptus Mechanicus|Reconnaissance|Michael Curnow|Finleys Angels
-Adeptus Mechanicus|Reconnaissance|Steve Boothroyd|Flapcats and Flackcannons
-Aeldari|Disruption|Matt Duncombe|Phoenix40k - Drooling Creatures
-Aeldari|Disruption|Neil Holman|Snake Eyes
-Aeldari|Priority Assets|Dan Zas|Polaris
-Aeldari|Reconnaissance|Matthew Norris|Carnage Chaos
-Aeldari|Reconnaissance|Philip Higgs|Death Korps of Queens Road, Honey Badgers
-Aeldari|Reconnaissance|Ross James|Krump or Dice Tryin'
-Aeldari|Reconnaissance|Dan W|PSSN: [L]ooming Table Flip
-Aeldari|Take and Hold|Adam Gill|[REDACTED]
-Aeldari|Take and Hold|Courtney Evetts|Webway Wanderers
-Astra Militarum|Priority Assets|Ryan Willett|Beasts of Buckingham
-Astra Militarum|Priority Assets|Cameron MacColl|Hobby Henchmen II
-Astra Militarum|Priority Assets|Chris Redfearn|Snake Eyes
-Astra Militarum|Purge the Foe|Warwick Smith|Live, Laugh, Lascannons
-Astra Militarum|Purge the Foe|Aaron Day|Polaris killer Bs
-Astra Militarum|Purge the Foe|Ross Small|Team Stonehammer
-Astra Militarum|Take and Hold|Will Gilbert|PSSN: [L]ooming Table Flip
-Astra Militarum|Take and Hold|Joshua Wood|Trash Wargaming
-Astra Militarum|Take and Hold|Albert Wright|Wet T-shirt saves
-Black Templars|Purge the Foe|Matt Lamacraft|Phoenix40k - Drooling Creatures
-Black Templars|Purge the Foe|Oliver Logan|Snake Eyes
-Blood Angels|Priority Assets|Reiss Jarvis|Sofa Meta
-Blood Angels|Priority Assets|Jordan Checkley|Vanguard Tactics
-Blood Angels|Purge the Foe|James Harrison|Cooked Green Dice
-Blood Angels|Purge the Foe|Dean Goldhawk|Krump or Dice Tryin'
-Blood Angels|Purge the Foe|Sir Chargealot|Shadowkeepers :: The Clueless
-Blood Angels|Purge the Foe|Sean Cook|The Minutemen 1
-Blood Angels|Reconnaissance|Jamie Payton|PSSN: Pile of Shame x LWG
-Blood Angels|Take and Hold|Nicolas Ballesteros|Fire and Dice - Targaryen
-Blood Angels|Take and Hold|Jordan Tilley|Phoenix40K - Outrageous Creatures
-Chaos Daemons|Disruption|Charlotte Kong|Death Korps of Queens Road, Honey Badgers
-Chaos Daemons|Disruption|Matt Smith|Webway Wanderers
-Chaos Daemons|Disruption|Will Johnson|Wet T-shirt saves
-Chaos Daemons|Purge the Foe|Corey Trumbley|Codex Creeps
-Chaos Daemons|Purge the Foe|Stephen Deare|DKQR - Frog
-Chaos Daemons|Purge the Foe|Byron Sidhu|Fire and Dice - Targaryen
-Chaos Daemons|Purge the Foe|Inder Bal|Fire and Dice - Tiger's eye
-Chaos Daemons|Purge the Foe|Jack Harrison|Low Rollers
-Chaos Daemons|Purge the Foe|Alex Walker|Sanguine Spanners
-Chaos Daemons|Reconnaissance|Stephen Heron|Black Herts
-Chaos Daemons|Reconnaissance|Christopher Langton|Carnage
-Chaos Daemons|Reconnaissance|Toby Bennett|Sofa Meta is Bad at Stuff
-Chaos Knights|Disruption|Rob Edwards|Forged In The Armoury
-Chaos Knights|Disruption|Josh Kent|Hobby Henchmen II
-Chaos Knights|Priority Assets|Daniel Benezra|Codex Creeps
-Chaos Knights|Priority Assets|Freddie Robinson|Hobby Henchmen I
-Chaos Knights|Purge the Foe|Darragh Magee|Adeptus Mancunian
-Chaos Knights|Purge the Foe|Christopher Ives|Beasts of Buckingham
-Chaos Knights|Reconnaissance|Ratnu Vaidya|DeadRedGaming
-Chaos Knights|Reconnaissance|Paolo Santarelli|Manaforge Games Derby
-Chaos Knights|Reconnaissance|Mark Sheard|Phoenix40k - Drooling Creatures
-Chaos Knights|Reconnaissance|James Climpson|Phoenix40K - Outrageous Creatures
-Chaos Knights|Reconnaissance|Kit Harvey-Lewis|Snake Eyes
-Chaos Knights|Reconnaissance|Ben Raven|Team YEET
-Chaos Knights|Reconnaissance|Blaise Galbraith|The Minutemen 2
-Chaos Knights|Take and Hold|Callum Byers|Sanguine Spanners
-Chaos Space Marines|Disruption|Christopher Axe|Blackwater Vikings Black
-Chaos Space Marines|Disruption|Jonathan Fequet|Codex Creeps
-Chaos Space Marines|Disruption|Finley Arbon-Donovan|Finleys Angels
-Chaos Space Marines|Disruption|Tom Briggs|Krump or Dice Tryin'
-Chaos Space Marines|Disruption|Sam Fisher|Manaforge Games Derby
-Chaos Space Marines|Disruption|Mark Main|Shadowkeepers :: The Chill
-Chaos Space Marines|Priority Assets|Matt Pocock|Flapcats and Flackcannons
-Chaos Space Marines|Priority Assets|Matthew Bunker|Tuesday Knights
-Chaos Space Marines|Priority Assets|John Swanston|TYPHOON
-Chaos Space Marines|Priority Assets|Connor Hulme|Zero On Primary
-Chaos Space Marines|Purge the Foe|Sam Dearman|Death Korps of Queens Road, Honey Badgers
-Chaos Space Marines|Purge the Foe|Ross Hilliard|Mind Gobliins
-Chaos Space Marines|Purge the Foe|Jamie Chapman|Mind Goblins
-Chaos Space Marines|Purge the Foe|Nathan Roberts|TFG Gaming
-Chaos Space Marines|Purge the Foe|Hubert Bialek|Wet T-shirt saves
-Chaos Space Marines|Reconnaissance|Samuel Smith|Fire and Dice - Targaryen
-Chaos Space Marines|Take and Hold|Arran Butters|Blackscar Gaming
-Chaos Space Marines|Take and Hold|Chris Enderby|PSSN: Pile of Shame x LWG
-Dark Angels|Disruption|Robert Quantrell|Blackwater Vikings Silver
-Dark Angels|Disruption|Adam Jehan|Blackwater Vikings Team Pink
-Dark Angels|Priority Assets|Cameron Clack|Blackwater Vikings Black
-Dark Angels|Priority Assets|charles shelley|Wet T-shirt saves
-Dark Angels|Reconnaissance|James Gascoine|[REDACTED]
-Dark Angels|Reconnaissance|Charles Gould|Ballers Brawlers
-Dark Angels|Reconnaissance|Louis Ballington|Mind Goblins
-Dark Angels|Reconnaissance|Ashley Farn|Trash Wargaming
-Dark Angels|Reconnaissance|Christopher Ridgers|Zero On Primary
-Dark Angels|Take and Hold|Jugrajveer Kundola|Flatcaps and flakcannons
-Death Guard|Disruption|Jono Graham|Adeptus Mancunian 1
-Death Guard|Disruption|Luke Cook|Ballers Brawlers
-Death Guard|Disruption|Lewis Etchells|BDK Gaming
-Death Guard|Disruption|Ben Hyde|Phoenix40k - Heinous Creatures
-Death Guard|Disruption|Alex Nicolic|Team Sigil
-Death Guard|Purge the Foe|Alfie Gavagan|Finleys Angels
-Death Guard|Take and Hold|Zan Rashid|Fire and Dice - Tiger's eye
-Death Guard|Take and Hold|Henry Taylor|Forged In The Armoury
-Death Guard|Take and Hold|Ben Matthews|Hobby Henchmen II
-Death Guard|Take and Hold|Jacob Kriegbaum|The Minutemen 1
-Death Guard|Take and Hold|Max Darby|Zero On Primary
-Deathwatch|Purge the Foe|Guy Miscampbell|PSSN: The Wizards of Odds
-Deathwatch|Purge the Foe|Chris Cho|Team Sigil
-Drukhari|Purge the Foe|Phil GC|Team YEET
-Drukhari|Reconnaissance|Matt Hucker|Beasts of Buckingham
-Drukhari|Reconnaissance|Tymon Jozefowski|Low Rollers
-Drukhari|Reconnaissance|Aneurin Brewer|PSSN: The Wizards of Odds
-Drukhari|Reconnaissance|Ryan Rees|Shadowkeepers :: The Clueless
-Drukhari|Reconnaissance|Alex Ford|The Sh[a]meful Suspects - PSSN
-Emperor's Children|Disruption|Jacob Whitehouse|Carnage Behemoth
-Emperor's Children|Disruption|Euan Bedford-Cooper|Fire and Dice - Targaryen
-Emperor's Children|Disruption|Mika Gawin|Flatcaps and flakcannons
-Emperor's Children|Disruption|Oliver Gaisford|Mind Goblins
-Emperor's Children|Disruption|Rowan Hesse|Polaris
-Emperor's Children|Disruption|Nikhil Talwar|PSSN: Pile of Shame x LWG
-Emperor's Children|Disruption|Josiah Tejeda|The Minutemen 2
-Emperor's Children|Disruption|Anthony Donaldson|TYPHOON
-Emperor's Children|Priority Assets|Alex Fleet|Blackwater Vikings Silver
-Emperor's Children|Priority Assets|Craig Bedford|Carnage
-Emperor's Children|Priority Assets|Mark Pilkington|DeadRedGaming
-Emperor's Children|Priority Assets|Luke Harris|Globo Gym
-Emperor's Children|Priority Assets|Douglas Fairfield|Low Rollers
-Emperor's Children|Priority Assets|DJ Inglis|Phoenix40k - Heinous Creatures
-Emperor's Children|Priority Assets|George Leathley|Sanguine Spanners
-Emperor's Children|Priority Assets|Rory Andrew|Team Stonehammer
-Emperor's Children|Priority Assets|Rafael Harbinson|TFG Gaming
-Emperor's Children|Purge the Foe|Jack Allen|Live and let dice
-Emperor's Children|Purge the Foe|Will Fowler|Phoenix40K - Outrageous Creatures
-Emperor's Children|Purge the Foe|Kyle Brady|Shut up Kyle
-Emperor's Children|Purge the Foe|Nick Zivtins|The Holy Hand Grenades
-Emperor's Children|Purge the Foe|Oliver Wheeler|Waaagh Boys
-Emperor's Children|Reconnaissance|Bertie G|Live, Laugh, Lascannons
-Emperor's Children|Reconnaissance|George Smith|Sofa Meta
-Emperor's Children|Reconnaissance|Edward Hearn|Team Sigil
-Emperor's Children|Reconnaissance|Sam Boardman|Vanguard Tactics
-Emperor's Children|Take and Hold|Tim Waters|PSSN: The Wizards of Odds
-Genestealer Cult|Disruption|Adam Stallwood|Fire and Dice - Tiger's eye
-Genestealer Cult|Disruption|Brant Wilson|Trash Wargaming
-Genestealer Cult|Reconnaissance|Sam Parker-Hully|Sanguine Spanners
-Genestealer Cult|Reconnaissance|Sean McQuaid|Tuesday Knights
-Grey Knights|Disruption|Eliot Osborne|[REDACTED]
-Grey Knights|Disruption|Nathan Cocker|DeadRedGaming
-Grey Knights|Disruption|Joe Shaw|Death Korps of Queens Road - Orca Squadron
-Grey Knights|Priority Assets|Rob Hassall|Death Korps of Queens Road, Honey Badgers
-Grey Knights|Priority Assets|Jack JC Chapman|Krump or Dice Tryin'
-Grey Knights|Priority Assets|Michael Westfall|The Minutemen 2
-Grey Knights|Purge the Foe|Kieran Taylor|Carnage Destruction
-Grey Knights|Purge the Foe|Michael Crawford-Jones|Hobby Henchmen I
-Grey Knights|Purge the Foe|Mike Keith|Sofa Meta
-Grey Knights|Purge the Foe|Jordan Penning|Tuesday Knights
-Grey Knights|Purge the Foe|Edward Perry|Tuesday Wizards
-Grey Knights|Take and Hold|Francisco Marquesini|Blackwater Vikings Black
-Grey Knights|Take and Hold|Jakob Sparrow|Snake Eyes
-Imperial Agents|Disruption|Jacob Wells|Carnage Chaos
-Imperial Agents|Disruption|Ross Tully|Hobby Henchmen I
-Imperial Knights|Disruption|Gordon Easingwood|Carnage Destruction
-Imperial Knights|Priority Assets|Finn Carter-Marsh|DKQR - Frog
-Imperial Knights|Priority Assets|Brian Griffin|Live, Laugh, Lascannons
-Imperial Knights|Priority Assets|Matthew Yeoh|PSSN: [L]ooming Table Flip
-Imperial Knights|Priority Assets|Tim Russell|Shadowkeepers :: The Chill
-Imperial Knights|Priority Assets|Steve Donn|Team YEET
-Imperial Knights|Priority Assets|Thomas Kusturin|The Minutemen 1
-Imperial Knights|Purge the Foe|Tim James|40Kasuals
-Imperial Knights|Purge the Foe|Ashley Blake|Black Herts
-Imperial Knights|Purge the Foe|Alex Nicoll|Blackwater Vikings Silver
-Imperial Knights|Purge the Foe|Jack Newland|Blackwater Vikings Team Pink
-Imperial Knights|Reconnaissance|Joe Gazzard|Cooked Green Dice
-Imperial Knights|Take and Hold|Lee Drinkall|Live and let dice
-Imperial Knights|Take and Hold|James Holland|Polaris killer Bs
-Leagues of Votann|Disruption|Bill Marvin|DKQR - Frog
-Leagues of Votann|Disruption|Alex Mee|Live and let dice
-Leagues of Votann|Disruption|Brock Duckworth|The Minutemen 1
-Leagues of Votann|Priority Assets|Ben Piddington|[REDACTED]
-Leagues of Votann|Priority Assets|Kyle Kitchen|BDK Gaming
-Leagues of Votann|Priority Assets|Phil Gill|Black Herts
-Leagues of Votann|Priority Assets|Joe Jackson|Forged In The Armoury
-Leagues of Votann|Priority Assets|Jamie Fowler|Krump or Dice Tryin' B Team
-Leagues of Votann|Priority Assets|Ollie Watts|PSSN: The Wizards of Odds
-Leagues of Votann|Priority Assets|Marcus Losty|Tuesday Wizards
-Leagues of Votann|Purge the Foe|Daniel Marshall|Phoenix40k - Heinous Creatures
-Leagues of Votann|Purge the Foe|Nathan Snelson|Trash Wargaming
-Leagues of Votann|Reconnaissance|Chippy Wesemael|Mind Gobliins
-Leagues of Votann|Reconnaissance|Ciaran Keen|Shadowkeepers :: The Chill
-Leagues of Votann|Take and Hold|Jo Cripps|40Kasuals
-Leagues of Votann|Take and Hold|Nick Hansen|Flapcats and Flackcannons
-Necrons|Disruption|James McMurray|Team Stonehammer
-Necrons|Priority Assets|Damian Corbett|40Kasuals
-Necrons|Priority Assets|Alfie Cox|Phoenix40k - Drooling Creatures
-Necrons|Purge the Foe|Richard Field|[REDACTED]
-Necrons|Purge the Foe|Scott Morris|Carnage
-Necrons|Purge the Foe|Kevin Davies|Carnage Behemoth
-Necrons|Purge the Foe|David Treadgold|Manaforge Games Derby
-Necrons|Purge the Foe|Stanley Peddle|TYPHOON
-Necrons|Reconnaissance|Luke Armstrong|Globo Gym
-Necrons|Reconnaissance|Dale Ahmed|Webway Wanderers
-Necrons|Reconnaissance|Aj Richardson|Wet T-shirt saves
-Necrons|Take and Hold|Toby Kan|Adeptus Mancunian 1
-Necrons|Take and Hold|Ben Stewart|BDK Gaming
-Necrons|Take and Hold|Chris Arlow|Black Herts
-Necrons|Take and Hold|Thomas Lumb|Carnage Destruction
-Necrons|Take and Hold|Sean Clancy|Codex Creeps
-Necrons|Take and Hold|Chris Lambert|Hobby Henchmen I
-Necrons|Take and Hold|Brett Armitage|TFG Gaming
-Necrons|Take and Hold|Alexandre Harnisch|Waaagh Boys
-Orks|Disruption|Piers Hunte-Dunne|Adeptus Mancunian
-Orks|Disruption|Tom Crook|Beasts of Buckingham
-Orks|Disruption|Benjamin Crowther|Low Rollers
-Orks|Disruption|Fintan Ryan|PSSN: [L]ooming Table Flip
-Orks|Disruption|Edward Shilcof|Shut up Kyle
-Orks|Disruption|Seth Bryan|Sofa Meta is Bad at Stuff
-Orks|Priority Assets|Josh Murphy|Blackscar Gaming
-Orks|Priority Assets|Chris Steel|The Holy Hand Grenades
-Orks|Purge the Foe|Andrew Thornton|Forged In The Armoury
-Orks|Reconnaissance|Sam Whymark|40Kasuals
-Orks|Take and Hold|Michael Glassock|Blackwater Vikings Team Pink
-Orks|Take and Hold|Chris Cuerden|Carnage
-Orks|Take and Hold|Callam Taylor-Deighton|Carnage Behemoth
-Orks|Take and Hold|Chris Taylor|Carnage Chaos
-Orks|Take and Hold|martin brown|Death Korps of Queens Road, Honey Badgers
-Orks|Take and Hold|Aaron Loftus|Finleys Angels
-Orks|Take and Hold|shawn Dominy|Globo Gym
-Orks|Take and Hold|Lewis Ferrari|Krump or Dice Tryin'
-Orks|Take and Hold|Dan Ford|Krump or Dice Tryin' B Team
-Orks|Take and Hold|Peter Bunce|Mind Gobliins
-Orks|Take and Hold|Vincent Stein|Team Sigil
-Orks|Take and Hold|Anthony Keen|The Sh[a]meful Suspects - PSSN
-Orks|Take and Hold|Graham Russell|Tuesday Knights
-Orks|Take and Hold|Ben Jones|Vanguard Tactics
-Space Marines (Astartes)|Disruption|Steve Hart|Black Herts
-Space Marines (Astartes)|Disruption|Mark Pocock|Flapcats and Flackcannons
-Space Marines (Astartes)|Disruption|Matthew Jemmerson|The Holy Hand Grenades
-Space Marines (Astartes)|Disruption|Matt Whiteley|The Sh[a]meful Suspects - PSSN
-Space Marines (Astartes)|Disruption|Dharminder Dhanda|Tuesday Wizards
-Space Marines (Astartes)|Priority Assets|Andy Plummer|Carnage Chaos
-Space Marines (Astartes)|Priority Assets|Nathan Gubbins|Death Korps of Queens Road - Orca Squadron
-Space Marines (Astartes)|Priority Assets|Jack Sharratt|Manaforge Games Derby
-Space Marines (Astartes)|Priority Assets|Alastair Marjoram|Polaris killer Bs
-Space Marines (Astartes)|Purge the Foe|James Wilson|Adeptus Mancunian 1
-Space Marines (Astartes)|Reconnaissance|Patrick Easingwood|Carnage Destruction
-Space Marines (Astartes)|Reconnaissance|John Bambridge|Codex Creeps
-Space Marines (Astartes)|Reconnaissance|Dan Gilbert|Fire and Dice - Tiger's eye
-Space Marines (Astartes)|Reconnaissance|Samuel Godding|Hobby Henchmen I
-Space Marines (Astartes)|Reconnaissance|Tom Noble|Live and let dice
-Space Marines (Astartes)|Reconnaissance|Jonathan Clarke|TFG Gaming
-Space Marines (Astartes)|Reconnaissance|Will B|TYPHOON
-Space Marines (Astartes)|Reconnaissance|Giulio Sinibaldi|Waaagh Boys
-Space Marines (Astartes)|Take and Hold|Sinhin Li|Adeptus Mancunian
-Space Marines (Astartes)|Take and Hold|Cameron Corbett|Beasts of Buckingham
-Space Marines (Astartes)|Take and Hold|Rohan Tesh|DKQR - Frog
-Space Marines (Astartes)|Take and Hold|Max DeBarr|Phoenix40k - Heinous Creatures
-Space Marines (Astartes)|Take and Hold|Noah Russell|Shadowkeepers :: The Chill
-Space Marines (Astartes)|Take and Hold|Andrew Downes|Shut up Kyle
-Space Marines (Astartes)|Take and Hold|Paul Edmonds|Sofa Meta is Bad at Stuff
-Space Wolves|Disruption|Gavin Abbott|40Kasuals
-Space Wolves|Disruption|Sudan Mcdade|Krump or Dice Tryin' B Team
-Space Wolves|Disruption|Aidan McDade|Live, Laugh, Lascannons
-T'au Empire|Disruption|James Hobbs|Vanguard Tactics
-T'au Empire|Priority Assets|Peter Guess|Adeptus Mancunian 1
-T'au Empire|Priority Assets|Kyle Grundy|Mind Goblins
-T'au Empire|Priority Assets|Daniel Woodhouse|Phoenix40K - Outrageous Creatures
-T'au Empire|Priority Assets|Sam Baber|Waaagh Boys
-T'au Empire|Purge the Foe|Carl Cooke|Ballers Brawlers
-T'au Empire|Purge the Foe|Matthew Coxon|BDK Gaming
-T'au Empire|Purge the Foe|Natalie Dodd|Flapcats and Flackcannons
-T'au Empire|Purge the Foe|Gee Hunter|Flatcaps and flakcannons
-T'au Empire|Purge the Foe|Nyran Grey|Krump or Dice Tryin' B Team
-T'au Empire|Purge the Foe|Geoffrey Stafford|Polaris
-T'au Empire|Purge the Foe|Christian Etheridge|Shadowkeepers :: The Chill
-T'au Empire|Purge the Foe|Luke Watson|Webway Wanderers
-T'au Empire|Reconnaissance|Chris Mcevoy|Adeptus Mancunian
-T'au Empire|Reconnaissance|Jack Quantrell|Blackwater Vikings Silver
-T'au Empire|Reconnaissance|Rusty Ashworth|Carnage Behemoth
-T'au Empire|Reconnaissance|Alexei de Berner|Hobby Henchmen II
-T'au Empire|Reconnaissance|Josh Tyler|Shut up Kyle
-T'au Empire|Reconnaissance|Joshua Rhodes|Team Stonehammer
-T'au Empire|Reconnaissance|Steven Timbers|The Holy Hand Grenades
-T'au Empire|Reconnaissance|Gary Maxwell|The Minutemen 1
-Thousand Sons|Disruption|Mathew Putney|Tuesday Knights
-Thousand Sons|Priority Assets|Jonny Crabtree|Ballers Brawlers
-Thousand Sons|Priority Assets|Ben Clark|Blackwater Vikings Team Pink
-Thousand Sons|Priority Assets|Joe Senior|Carnage Behemoth
-Thousand Sons|Priority Assets|Nathan Jukes|Carnage Destruction
-Thousand Sons|Priority Assets|Josh Hazelwood|Cooked Green Dice
-Thousand Sons|Priority Assets|Cayleb Langhals|The Sh[a]meful Suspects - PSSN
-Thousand Sons|Priority Assets|Callum Evans|Trash Wargaming
-Thousand Sons|Reconnaissance|Dom Ridley|Polaris
-Thousand Sons|Take and Hold|James Webster|DeadRedGaming
-Thousand Sons|Take and Hold|Louis Boote|Live, Laugh, Lascannons
-Thousand Sons|Take and Hold|Alex Parnall|Manaforge Games Derby
-Thousand Sons|Take and Hold|George Miller|Phoenix40k - Drooling Creatures
-Thousand Sons|Take and Hold|Ed Benson|Team YEET
-Thousand Sons|Take and Hold|Jonathan Causey|The Minutemen 2
-Tyranids|Disruption|Joseph Cocking|Blackscar Gaming
-Tyranids|Disruption|Matthew Langton|Carnage
-Tyranids|Disruption|James Wilson|Polaris killer Bs
-Tyranids|Disruption|Callum Watts|PSSN: The Wizards of Odds
-Tyranids|Disruption|Thomas Welsh|Sanguine Spanners
-Tyranids|Disruption|Daniel Lipscombe|Sofa Meta
-Tyranids|Disruption|Ben Hocking|TFG Gaming
-Tyranids|Disruption|Matthew Wilson|Zero On Primary
-Tyranids|Priority Assets|Oscar Luckin|PSSN: Pile of Shame x LWG
-Tyranids|Reconnaissance|Dan Jones|Adeptus Mancunian 1
-Tyranids|Reconnaissance|Mark Burke|BDK Gaming
-Tyranids|Reconnaissance|Rob McAllister|Blackwater Vikings Black
-Tyranids|Reconnaissance|Sean O'Connor|Blackwater Vikings Team Pink
-Tyranids|Reconnaissance|Adam Battle|Flatcaps and flakcannons
-Tyranids|Reconnaissance|Matt Fearn|Phoenix40k - Heinous Creatures
-Tyranids|Take and Hold|Nathan Osborne|Blackwater Vikings Silver
-Tyranids|Take and Hold|Scott Ogden|Cooked Green Dice
-Tyranids|Take and Hold|Martin Freeman|Death Korps of Queens Road - Orca Squadron
-Tyranids|Take and Hold|Jamie Paris|Shadowkeepers :: The Clueless
-World Eaters|Priority Assets|Nathaniel Sibley|Flatcaps and flakcannons
-World Eaters|Purge the Foe|Daniel Berris|Blackwater Vikings Black
-World Eaters|Purge the Foe|Ryan Rowe|Globo Gym
-World Eaters|Purge the Foe|Ben McCarthy|PSSN: [L]ooming Table Flip
-World Eaters|Purge the Foe|Francisco Parga|PSSN: Pile of Shame x LWG
-World Eaters|Purge the Foe|Adam Nicholson|Sofa Meta is Bad at Stuff
-World Eaters|Purge the Foe|Daniel Green|The Sh[a]meful Suspects - PSSN
-World Eaters|Reconnaissance|Jack Jackson-Savill|Forged In The Armoury`;
+const MY_PLAYERS = [
+  { key: 'luke', name: 'Luke Watson', army: "T'au Empire", disposition: 'Purge the Foe' },
+  { key: 'court', name: 'Courtney Evetts', army: 'Aeldari', disposition: 'Take and Hold' },
+  { key: 'andy', name: 'Andy Ingram-Tedd', army: 'Adeptus Mechanicus', disposition: 'Priority Assets' },
+  { key: 'dale', name: 'Dale Ahmed', army: 'Necrons', disposition: 'Reconnaissance' },
+  { key: 'matt', name: 'Matt Smith', army: 'Chaos Daemons', disposition: 'Disruption' }
+];
 
-  function parseRoster(raw) {
-    const teams = {};
-    raw.trim().split('\n').forEach(line => {
-      const [army, disposition, player, team] = line.split('|');
-      if (!teams[team]) teams[team] = [];
-      teams[team].push({ army, disposition, player });
-    });
-    return teams;
-  }
+const DEFAULT_ARMY_RATINGS = {
+  luke:  {"Emperor's Children":1,"Space Marines (Astartes)":1,"Orks":0,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":1,"Thousand Sons":1,"Chaos Knights":0,"Imperial Knights":0,"Grey Knights":-1,"Chaos Daemons":1,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":-1,"Drukhari":1,"Genestealer Cult":1,"Space Wolves":-1,"Black Templars":0,"Deathwatch":-1,"Imperial Agents":0},
+  court: {"Emperor's Children":1,"Space Marines (Astartes)":-1,"Orks":0,"Adeptus Custodes":1,"T'au Empire":-1,"Necrons":0,"Tyranids":1,"Chaos Space Marines":0,"Leagues of Votann":-1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":1,"Adeptus Mechanicus":-1,"Death Guard":0,"Dark Angels":1,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":0,"World Eaters":-1,"Drukhari":-1,"Genestealer Cult":-1,"Space Wolves":0,"Black Templars":1,"Deathwatch":1,"Imperial Agents":0},
+  andy:  {"Emperor's Children":0,"Space Marines (Astartes)":0,"Orks":-1,"Adeptus Custodes":0,"T'au Empire":1,"Necrons":-1,"Tyranids":-1,"Chaos Space Marines":0,"Leagues of Votann":0,"Thousand Sons":0,"Chaos Knights":1,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":1,"Astra Militarum":1,"Blood Angels":0,"World Eaters":1,"Drukhari":0,"Genestealer Cult":-1,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0},
+  dale:  {"Emperor's Children":1,"Space Marines (Astartes)":0,"Orks":1,"Adeptus Custodes":-1,"T'au Empire":-1,"Necrons":0,"Tyranids":0,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":-1,"Imperial Knights":-1,"Grey Knights":0,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":1,"Dark Angels":0,"Adepta Sororitas":-1,"Aeldari":0,"Astra Militarum":0,"Blood Angels":1,"World Eaters":1,"Drukhari":-1,"Genestealer Cult":0,"Space Wolves":-1,"Black Templars":0,"Deathwatch":0,"Imperial Agents":0},
+  matt:  {"Emperor's Children":-1,"Space Marines (Astartes)":1,"Orks":1,"Adeptus Custodes":0,"T'au Empire":-1,"Necrons":-1,"Tyranids":1,"Chaos Space Marines":1,"Leagues of Votann":1,"Thousand Sons":-1,"Chaos Knights":0,"Imperial Knights":1,"Grey Knights":1,"Chaos Daemons":0,"Adeptus Mechanicus":1,"Death Guard":-1,"Dark Angels":1,"Adepta Sororitas":1,"Aeldari":1,"Astra Militarum":0,"Blood Angels":-1,"World Eaters":1,"Drukhari":1,"Genestealer Cult":0,"Space Wolves":1,"Black Templars":1,"Deathwatch":0,"Imperial Agents":0}
+};
 
-  const TEAMS = parseRoster(ROSTER_RAW);
+const DEFAULT_DISPOSITION_RATINGS = {
+  luke:  {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0},
+  court: {"Purge the Foe":-1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":0,"Disruption":1},
+  andy:  {"Purge the Foe":1,"Take and Hold":1,"Priority Assets":0,"Reconnaissance":-1,"Disruption":-1},
+  dale:  {"Purge the Foe":-1,"Take and Hold":0,"Priority Assets":1,"Reconnaissance":0,"Disruption":1},
+  matt:  {"Purge the Foe":1,"Take and Hold":-1,"Priority Assets":0,"Reconnaissance":1,"Disruption":0}
+};
 
-  function scoreOf(myKey, oppArmy, oppDisposition) {
-    const a = ARMY_RATINGS[myKey][oppArmy] ?? 0;
-    const d = DISPOSITION_RATINGS[myKey][oppDisposition] ?? 0;
-    return { total: a + d, army: a, disposition: d };
-  }
+const ARMIES = Object.keys(DEFAULT_ARMY_RATINGS.luke);
+const DISPOSITIONS = ["Priority Assets","Reconnaissance","Take and Hold","Disruption","Purge the Foe"];
 
-  function classFor(n) {
-    if (n >= 2) return 's2';
-    if (n === 1) return 's1';
-    if (n === 0) return 's0';
-    if (n === -1) return 'sm1';
-    return 'sm2';
-  }
+// live, mutable — starts from defaults, overwritten by Firebase (or localStorage) once loaded
+let RATINGS = {
+  armies: JSON.parse(JSON.stringify(DEFAULT_ARMY_RATINGS)),
+  dispositions: JSON.parse(JSON.stringify(DEFAULT_DISPOSITION_RATINGS))
+};
 
-  function fmtSigned(n) {
-    return (n > 0 ? '+' : '') + n;
-  }
+let TEAMS = {};      // teamName -> [{player, army, disposition, elo, rank, winPct, confidence, country, event, club, comments}]
+let TEAM_INFO = {};  // teamName -> {threatRank, threatScore, squadElo, nationalRank, captain, comments, topPlayer, topPlayerElo}
 
-  // best assignment: for n opponents (<=5), pick n of the 5 my-players (no repeats)
-  // maximizing total score. Small search space, brute forced recursively.
-  function bestAssignment(matrix, n) {
-    const used = new Array(5).fill(false);
-    let best = { score: -Infinity, assign: [] };
-    function recurse(oppIdx, assign, score) {
-      if (oppIdx === n) {
-        if (score > best.score) best = { score, assign: assign.slice() };
-        return;
-      }
-      for (let m = 0; m < 5; m++) {
-        if (used[m]) continue;
-        used[m] = true;
-        assign.push(m);
-        recurse(oppIdx + 1, assign, score + matrix[m][oppIdx].total);
-        assign.pop();
-        used[m] = false;
-      }
-    }
-    recurse(0, [], 0);
-    return best;
-  }
-
-  const select = document.getElementById('opponent');
-  const emptyEl = document.getElementById('empty');
-  const resultEl = document.getElementById('result');
-  const warnEl = document.getElementById('warn');
-  const lineupEl = document.getElementById('lineup');
-  const totalEl = document.getElementById('total');
-  const verdictEl = document.getElementById('verdict');
-  const matrixEl = document.getElementById('matrix');
-
-  Object.keys(TEAMS).filter(t => t !== MY_TEAM_NAME).sort((a, b) => a.localeCompare(b)).forEach(team => {
-    const opt = document.createElement('option');
-    opt.value = team;
-    opt.textContent = team;
-    select.appendChild(opt);
-  });
-
-  select.addEventListener('change', () => {
-    const team = select.value;
-    if (!team) {
-      emptyEl.style.display = '';
-      resultEl.classList.remove('active');
-      warnEl.style.display = 'none';
-      return;
-    }
-    const opponents = TEAMS[team];
-    emptyEl.style.display = 'none';
-    resultEl.classList.add('active');
-
-    if (opponents.length !== 5) {
-      warnEl.style.display = '';
-      warnEl.textContent = `Incomplete roster in sheet: ${opponents.length}/5 players listed for this team.`;
+// ============================================================================
+// CSV parsing + data load
+// ============================================================================
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQuotes = false; }
+      else field += c;
     } else {
-      warnEl.style.display = 'none';
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(field); field = '';
+        if (row.some(x => x !== '')) rows.push(row);
+        row = [];
+      } else field += c;
     }
-
-    const n = Math.min(5, opponents.length);
-    const matrix = MY_PLAYERS.map(mp => opponents.slice(0, n).map(op => scoreOf(mp.key, op.army, op.disposition)));
-    const { score: total, assign } = bestAssignment(matrix, n);
-
-    // recommended lineup
-    lineupEl.innerHTML = '';
-    for (let j = 0; j < n; j++) {
-      const myIdx = assign[j];
-      const mp = MY_PLAYERS[myIdx];
-      const op = opponents[j];
-      const s = matrix[myIdx][j];
-      const row = document.createElement('div');
-      row.className = 'lineup-row';
-      row.innerHTML = `
-        <div class="who us">
-          <span class="name">${mp.name}</span>
-          <span class="meta">${mp.army} · ${mp.disposition}</span>
-        </div>
-        <div class="vs">VS</div>
-        <div class="who them">
-          <span class="name">${op.player}</span>
-          <span class="meta">${op.army} · ${op.disposition}</span>
-        </div>
-        <div class="score-pill ${classFor(s.total)}">${fmtSigned(s.total)}</div>
-      `;
-      lineupEl.appendChild(row);
-    }
-    if (n < 5) {
-      const note = document.createElement('div');
-      note.className = 'lineup-row';
-      note.innerHTML = `<div class="who us"><span class="meta">${5 - n} of our players have no opponent listed for this team.</span></div><div></div><div></div><div></div>`;
-      lineupEl.appendChild(note);
-    }
-
-    totalEl.textContent = fmtSigned(total);
-    totalEl.className = 'value ' + (total > 0 ? '' : '');
-    if (total >= 3) verdictEl.textContent = 'Strongly favourable matchup';
-    else if (total >= 1) verdictEl.textContent = 'Favourable matchup';
-    else if (total === 0) verdictEl.textContent = 'Even matchup';
-    else if (total >= -2) verdictEl.textContent = 'Unfavourable matchup';
-    else verdictEl.textContent = 'Uphill battle';
-
-    // matrix
-    let thead = '<thead><tr><th class="corner"></th>' + opponents.slice(0, n).map(op =>
-      `<th><span class="pname">${op.player}</span><span class="pmeta">${op.army}</span><span class="pmeta">${op.disposition}</span></th>`
-    ).join('') + '</tr></thead>';
-
-    let tbody = '<tbody>' + MY_PLAYERS.map((mp, i) => {
-      const cells = matrix[i].map((s, j) => {
-        const picked = assign[j] === i ? ' picked' : '';
-        return `<td class="cell ${classFor(s.total)}${picked}"><span class="tot">${fmtSigned(s.total)}</span><span class="brk">army ${fmtSigned(s.army)} · disp ${fmtSigned(s.disposition)}</span></td>`;
-      }).join('');
-      return `<tr><th><span class="pname">${mp.name}</span><span class="pmeta">${mp.army} · ${mp.disposition}</span></th>${cells}</tr>`;
-    }).join('') + '</tbody>';
-
-    matrixEl.innerHTML = thead + tbody;
+  }
+  if (field !== '' || row.length) { row.push(field); if (row.some(x => x !== '')) rows.push(row); }
+  const header = rows[0];
+  return rows.slice(1).map(r => {
+    const obj = {};
+    header.forEach((h, i) => obj[h] = (r[i] || '').trim());
+    return obj;
   });
+}
+
+async function loadData() {
+  const [playersText, teamsText] = await Promise.all([
+    fetch('./players.csv').then(r => r.text()),
+    fetch('./teams.csv').then(r => r.text())
+  ]);
+  const playerRows = parseCSV(playersText);
+  playerRows.forEach(p => {
+    if (!TEAMS[p.Team]) TEAMS[p.Team] = [];
+    TEAMS[p.Team].push({
+      player: p.Player, army: p.Faction, disposition: p['Force Disposition'],
+      elo: p.Elo, rank: p['Global Elo Rank'], winPct: p['Win %'], confidence: p.Confidence,
+      country: p.Country, event: p['Most Recent Event'], club: p['Club (as listed)'],
+      comments: p.Comments
+    });
+  });
+  parseCSV(teamsText).forEach(t => { TEAM_INFO[t.Team] = t; });
+}
+
+// ============================================================================
+// scoring + assignment
+// ============================================================================
+function scoreOf(myKey, oppArmy, oppDisposition) {
+  const a = RATINGS.armies[myKey]?.[oppArmy] ?? 0;
+  const d = RATINGS.dispositions[myKey]?.[oppDisposition] ?? 0;
+  return { total: a + d, army: a, disposition: d };
+}
+function classFor(n) { return n >= 2 ? 's2' : n === 1 ? 's1' : n === 0 ? 's0' : n === -1 ? 'sm1' : 'sm2'; }
+function fmtSigned(n) { return (n > 0 ? '+' : '') + n; }
+
+function bestAssignment(matrix, n) {
+  const used = new Array(5).fill(false);
+  let best = { score: -Infinity, assign: [] };
+  (function recurse(oppIdx, assign, score) {
+    if (oppIdx === n) { if (score > best.score) best = { score, assign: assign.slice() }; return; }
+    for (let m = 0; m < 5; m++) {
+      if (used[m]) continue;
+      used[m] = true; assign.push(m);
+      recurse(oppIdx + 1, assign, score + matrix[m][oppIdx].total);
+      assign.pop(); used[m] = false;
+    }
+  })(0, [], 0);
+  return best;
+}
+
+// ============================================================================
+// ROUTER
+// ============================================================================
+const routes = ['matchup', 'advanced', 'setup'];
+function currentRoute() {
+  const h = (location.hash || '#matchup').slice(1);
+  return routes.includes(h) ? h : 'matchup';
+}
+function renderRoute() {
+  const r = currentRoute();
+  routes.forEach(name => {
+    document.getElementById('view-' + name).classList.toggle('active', name === r);
+  });
+  document.querySelectorAll('nav.drawer a').forEach(a => a.classList.toggle('active', a.dataset.route === r));
+  closeDrawer();
+}
+window.addEventListener('hashchange', renderRoute);
+
+const navToggle = document.getElementById('navToggle');
+const navDrawer = document.getElementById('navDrawer');
+const navScrim = document.getElementById('navScrim');
+function openDrawer() { navDrawer.classList.add('open'); navScrim.classList.add('open'); }
+function closeDrawer() { navDrawer.classList.remove('open'); navScrim.classList.remove('open'); }
+navToggle.addEventListener('click', () => navDrawer.classList.contains('open') ? closeDrawer() : openDrawer());
+navScrim.addEventListener('click', closeDrawer);
+
+// ============================================================================
+// SHARED: opponent selects (matchup + advanced) stay in sync
+// ============================================================================
+let currentOpponent = '';
+const opponentSelect = document.getElementById('opponentSelect');
+const advOpponentSelect = document.getElementById('advOpponentSelect');
+
+function populateOpponentSelects() {
+  const names = Object.keys(TEAMS).filter(t => t !== MY_TEAM_NAME).sort((a, b) => a.localeCompare(b));
+  [opponentSelect, advOpponentSelect].forEach(sel => {
+    names.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  });
+}
+function setOpponent(name) {
+  currentOpponent = name;
+  opponentSelect.value = name;
+  advOpponentSelect.value = name;
+  renderMatchup();
+  startAdvanced();
+}
+opponentSelect.addEventListener('change', () => setOpponent(opponentSelect.value));
+advOpponentSelect.addEventListener('change', () => setOpponent(advOpponentSelect.value));
+
+// ============================================================================
+// MATCHUP VIEW
+// ============================================================================
+const matchupEmpty = document.getElementById('matchupEmpty');
+const matchupResult = document.getElementById('matchupResult');
+const matchupWarn = document.getElementById('matchupWarn');
+const teamCardEl = document.getElementById('teamCard');
+const lineupEl = document.getElementById('lineup');
+const totalEl = document.getElementById('total');
+const verdictEl = document.getElementById('verdict');
+const matrixEl = document.getElementById('matrix');
+
+function scoutLine(opp) {
+  const eloText = opp.elo ? `Elo ${opp.elo}${opp.rank ? ' (global #' + opp.rank + ')' : ''}` : 'Unrated';
+  const wr = opp.winPct ? `${opp.winPct} win rate` : '';
+  const bits = [eloText, wr].filter(Boolean).map(t => `<span class="chip${opp.elo && Number(opp.elo) >= 1650 ? ' strong' : ''}">${t}</span>`).join('');
+  const comment = (opp.comments || '').trim();
+  return `<div class="scout-line">${bits}${comment ? `<details><summary>Scouting note</summary><div class="comment">${comment}</div></details>` : ''}</div>`;
+}
+
+function renderMatchup() {
+  if (!currentOpponent) {
+    matchupEmpty.style.display = '';
+    matchupResult.style.display = 'none';
+    return;
+  }
+  const opponents = TEAMS[currentOpponent] || [];
+  matchupEmpty.style.display = 'none';
+  matchupResult.style.display = 'flex';
+
+  if (opponents.length !== 5) {
+    matchupWarn.style.display = '';
+    matchupWarn.textContent = `Incomplete roster in sheet: ${opponents.length}/5 players listed for this team.`;
+  } else matchupWarn.style.display = 'none';
+
+  const ti = TEAM_INFO[currentOpponent];
+  if (ti) {
+    teamCardEl.innerHTML = `
+      <div class="row1">
+        <span class="name">${currentOpponent}</span>
+        ${ti['Threat Rank'] ? `<span class="chip">Threat rank ${ti['Threat Rank']}</span>` : ''}
+        ${ti['UKTC National Rank'] ? `<span class="chip">National #${ti['UKTC National Rank']}</span>` : ''}
+        ${ti.Captain ? `<span class="chip">Captain: ${ti.Captain}</span>` : ''}
+      </div>
+      ${ti.Comments ? `<details><summary>Squad scouting note</summary><div class="note">${ti.Comments}</div></details>` : ''}
+    `;
+  } else teamCardEl.innerHTML = `<div class="row1"><span class="name">${currentOpponent}</span></div>`;
+
+  const n = Math.min(5, opponents.length);
+  const matrix = MY_PLAYERS.map(mp => opponents.slice(0, n).map(op => scoreOf(mp.key, op.army, op.disposition)));
+  const { score: total, assign } = bestAssignment(matrix, n);
+
+  lineupEl.innerHTML = '';
+  for (let j = 0; j < n; j++) {
+    const myIdx = assign[j];
+    const mp = MY_PLAYERS[myIdx];
+    const op = opponents[j];
+    const s = matrix[myIdx][j];
+    const row = document.createElement('div');
+    row.className = 'lineup-row';
+    row.innerHTML = `
+      <div class="lineup-top">
+        <div class="who us"><span class="name">${mp.name}</span><span class="meta">${mp.army} &middot; ${mp.disposition}</span></div>
+        <div class="vs">VS</div>
+        <div class="who them"><span class="name">${op.player}</span><span class="meta">${op.army} &middot; ${op.disposition}</span></div>
+        <div class="score-pill ${classFor(s.total)}">${fmtSigned(s.total)}</div>
+      </div>
+      ${scoutLine(op)}
+    `;
+    lineupEl.appendChild(row);
+  }
+  if (n < 5) {
+    const note = document.createElement('div');
+    note.className = 'lineup-row';
+    note.innerHTML = `<div class="lineup-top"><div class="who us"><span class="meta">${5 - n} of our players have no opponent listed for this team.</span></div><div></div><div></div><div></div></div>`;
+    lineupEl.appendChild(note);
+  }
+
+  totalEl.textContent = fmtSigned(total);
+  verdictEl.textContent = total >= 3 ? 'Strongly favourable matchup' : total >= 1 ? 'Favourable matchup' : total === 0 ? 'Even matchup' : total >= -2 ? 'Unfavourable matchup' : 'Uphill battle';
+
+  let thead = '<thead><tr><th class="corner"></th>' + opponents.slice(0, n).map(op =>
+    `<th><span class="pname">${op.player}</span><span class="pmeta">${op.army}</span><span class="pmeta">${op.disposition}</span></th>`
+  ).join('') + '</tr></thead>';
+  let tbody = '<tbody>' + MY_PLAYERS.map((mp, i) => {
+    const cells = matrix[i].map((s, j) => {
+      const picked = assign[j] === i ? ' picked' : '';
+      return `<td class="cell ${classFor(s.total)}${picked}"><span class="tot">${fmtSigned(s.total)}</span><span class="brk">army ${fmtSigned(s.army)} &middot; disp ${fmtSigned(s.disposition)}</span></td>`;
+    }).join('');
+    return `<tr><th><span class="pname">${mp.name}</span><span class="pmeta">${mp.army} &middot; ${mp.disposition}</span></th>${cells}</tr>`;
+  }).join('') + '</tbody>';
+  matrixEl.innerHTML = thead + tbody;
+}
+
+// ============================================================================
+// TEAM SETUP VIEW — tap Strong/Weak grid per player, synced live
+// ============================================================================
+const whoPicker = document.getElementById('whoPicker');
+const setupBody = document.getElementById('setupBody');
+const setupEmpty = document.getElementById('setupEmpty');
+let setupPlayer = null;
+
+MY_PLAYERS.forEach(p => {
+  const btn = document.createElement('button');
+  btn.className = 'who-btn';
+  btn.textContent = p.name;
+  btn.addEventListener('click', () => { setupPlayer = p.key; renderSetup(); });
+  whoPicker.appendChild(btn);
+});
+
+function tapGrid(title, items, ratingsObj, onChange) {
+  const wrap = document.createElement('div');
+  const h = document.createElement('h2');
+  h.className = 'section-title';
+  h.textContent = title;
+  wrap.appendChild(h);
+  const grid = document.createElement('div');
+  grid.className = 'tap-grid';
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'tap-row';
+    const current = ratingsObj[item] || 0;
+    row.innerHTML = `
+      <span class="label">${item}</span>
+      <button class="tap-btn weak ${current === -1 ? 'active' : ''}" data-val="-1">WEAK</button>
+      <button class="tap-btn strong ${current === 1 ? 'active' : ''}" data-val="1">STRONG</button>
+    `;
+    row.querySelectorAll('.tap-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = Number(btn.dataset.val);
+        const next = current === val ? 0 : val;
+        onChange(item, next);
+      });
+    });
+    grid.appendChild(row);
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function renderSetup() {
+  document.querySelectorAll('.who-btn').forEach((b, i) => b.classList.toggle('active', MY_PLAYERS[i].key === setupPlayer));
+  if (!setupPlayer) { setupBody.style.display = 'none'; setupEmpty.style.display = ''; return; }
+  setupEmpty.style.display = 'none';
+  setupBody.style.display = 'flex';
+  setupBody.innerHTML = '';
+
+  const note = document.createElement('div');
+  note.className = 'setup-note';
+  note.innerHTML = `Tap STRONG or WEAK for each army/disposition. Tap the same one again to clear it back to even. <span class="save-flash" id="saveFlash">Saved</span>`;
+  setupBody.appendChild(note);
+
+  setupBody.appendChild(tapGrid('Armies', ARMIES, RATINGS.armies[setupPlayer], (item, val) => {
+    RATINGS.armies[setupPlayer][item] = val;
+    persistRating('armies', setupPlayer, item, val);
+    renderSetup();
+    flashSave();
+  }));
+  setupBody.appendChild(tapGrid('Force Dispositions', DISPOSITIONS, RATINGS.dispositions[setupPlayer], (item, val) => {
+    RATINGS.dispositions[setupPlayer][item] = val;
+    persistRating('dispositions', setupPlayer, item, val);
+    renderSetup();
+    flashSave();
+  }));
+}
+function flashSave() {
+  const el = document.getElementById('saveFlash');
+  if (!el) return;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 900);
+}
+
+// ============================================================================
+// ADVANCED MATCHUP WIZARD — Initial Skirmish + Main Engagement
+// ============================================================================
+const advEmpty = document.getElementById('advEmpty');
+const advBody = document.getElementById('advBody');
+let adv = null;
+
+function startAdvanced() {
+  if (!currentOpponent) { adv = null; advEmpty.style.display = ''; advBody.style.display = 'none'; return; }
+  const opponents = TEAMS[currentOpponent] || [];
+  if (opponents.length !== 5) {
+    advEmpty.style.display = '';
+    advEmpty.textContent = `Need a full 5-player roster to run the wizard (only ${opponents.length}/5 listed for this team).`;
+    advBody.style.display = 'none';
+    return;
+  }
+  advEmpty.style.display = 'none';
+  advBody.style.display = 'flex';
+  adv = {
+    opponents,
+    phase: 'initial',       // 'initial' | 'main' | 'done'
+    step: 0,                // 0..5 within a phase
+    myPool: [0, 1, 2, 3, 4],
+    oppPool: [0, 1, 2, 3, 4],
+    myDefender: null, oppDefender: null,
+    myAttackers: null, oppAttackers: null,
+    myChosenAttacker: null,  // which of oppAttackers our defender picked to face
+    oppChosenAttacker: null, // which of myAttackers the opponent's defender picked
+    pairings: []
+  };
+  renderAdvanced();
+}
+
+function scoreMyVsOpp(myIdx, oppIdx) {
+  const mp = MY_PLAYERS[myIdx], op = adv.opponents[oppIdx];
+  return scoreOf(mp.key, op.army, op.disposition);
+}
+
+function avgScoreAgainstPool(myIdx, oppIndices) {
+  const scores = oppIndices.map(oi => scoreMyVsOpp(myIdx, oi).total);
+  return scores.reduce((a, b) => a + b, 0) / scores.length;
+}
+
+function phaseLabel() { return adv.phase === 'initial' ? 'Initial Skirmish' : 'Main Engagement'; }
+
+function lockPairing(myIdx, oppIdx) {
+  const s = scoreMyVsOpp(myIdx, oppIdx);
+  adv.pairings.push({ myIdx, oppIdx, phase: phaseLabel(), score: s.total });
+  adv.myPool = adv.myPool.filter(i => i !== myIdx);
+  adv.oppPool = adv.oppPool.filter(i => i !== oppIdx);
+}
+
+function advReset() {
+  adv.step = 0; adv.myDefender = null; adv.oppDefender = null;
+  adv.myAttackers = null; adv.oppAttackers = null;
+  adv.myChosenAttacker = null; adv.oppChosenAttacker = null;
+}
+
+function advAdvance() {
+  adv.step++;
+  if (adv.step > 5) {
+    // two pairings from this phase are locked; move to next phase or finish
+    if (adv.phase === 'initial') { adv.phase = 'main'; advReset(); }
+    else {
+      // main engagement done -> last remaining pair is automatic
+      if (adv.myPool.length === 1 && adv.oppPool.length === 1) {
+        const s = scoreMyVsOpp(adv.myPool[0], adv.oppPool[0]);
+        adv.pairings.push({ myIdx: adv.myPool[0], oppIdx: adv.oppPool[0], phase: 'Final Pairing', score: s.total });
+      }
+      adv.phase = 'done';
+    }
+  }
+  renderAdvanced();
+}
+
+function progressDots() {
+  const totalSteps = 12; // 6 per phase x 2
+  const done = adv.phase === 'done' ? totalSteps : (adv.phase === 'initial' ? adv.step : 6 + adv.step);
+  let html = '<div class="wiz-progress">';
+  for (let i = 0; i < totalSteps; i++) {
+    html += `<div class="dot ${i < done ? 'done' : i === done ? 'now' : ''}"></div>`;
+  }
+  return html + '</div>';
+}
+
+function renderAdvanced() {
+  if (!adv) return;
+  let html = progressDots();
+
+  if (adv.pairings.length) {
+    html += '<div class="wiz-locked">';
+    adv.pairings.forEach(p => {
+      const mp = MY_PLAYERS[p.myIdx], op = adv.opponents[p.oppIdx];
+      html += `<div class="wiz-locked-row"><span>${p.phase}: <strong>${mp.name}</strong> vs <strong>${op.player}</strong></span><span class="score-pill ${classFor(p.score)}" style="display:inline-block;min-width:32px;">${fmtSigned(p.score)}</span></div>`;
+    });
+    html += '</div>';
+  }
+
+  if (adv.phase === 'done') {
+    const total = adv.pairings.reduce((a, p) => a + p.score, 0);
+    html += `<div class="wiz-card"><div class="wiz-phase">Round complete</div><div class="wiz-question">All 5 pairings locked</div><div class="totalbar" style="margin:0 -16px -16px;"><div class="label">Projected total</div><div class="value">${fmtSigned(total)}</div></div></div>`;
+    advBody.innerHTML = html;
+    return;
+  }
+
+  const pool = adv.myPool, oppPool = adv.oppPool;
+  const step = adv.step;
+
+  html += `<div class="wiz-card"><div class="wiz-phase">${phaseLabel()} &middot; step ${step + 1} of 6</div>`;
+
+  if (step === 0) {
+    html += `<div class="wiz-question">Pick your Defender</div><div class="wiz-help">Recommended = best average score across the opponents still in the pool.</div><div class="wiz-options">`;
+    const scored = pool.map(i => ({ i, avg: avgScoreAgainstPool(i, oppPool) })).sort((a, b) => b.avg - a.avg);
+    scored.forEach((s, idx) => {
+      const mp = MY_PLAYERS[s.i];
+      html += `<button class="wiz-opt ${idx === 0 ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${idx === 0 ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${s.avg.toFixed(1)} avg</span></button>`;
+    });
+    html += `</div></div>`;
+    advBody.innerHTML = html;
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.myDefender = Number(btn.dataset.i); advAdvance(); }));
+    return;
+  }
+
+  if (step === 1) {
+    html += `<div class="wiz-question">Which of their players did the opponent reveal as Defender?</div><div class="wiz-help">Enter what the opposing captain revealed at the table.</div><div class="wiz-options">`;
+    oppPool.forEach(oi => {
+      const op = adv.opponents[oi];
+      html += `<button class="wiz-opt" data-i="${oi}"><span><span class="opt-name">${op.player}</span><br/><span class="opt-meta">${op.army} &middot; ${op.disposition}</span></span></button>`;
+    });
+    html += `</div></div>`;
+    advBody.innerHTML = html;
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.oppDefender = Number(btn.dataset.i); advAdvance(); }));
+    return;
+  }
+
+  if (step === 2) {
+    const candidates = pool.filter(i => i !== adv.myDefender);
+    const scored = candidates.map(i => ({ i, s: scoreMyVsOpp(i, adv.oppDefender).total })).sort((a, b) => b.s - a.s);
+    const recommendedSet = new Set(scored.slice(0, 2).map(x => x.i));
+    html += `<div class="wiz-question">Pick your 2 Attackers</div><div class="wiz-help">Recommended = your 2 best scores against their revealed Defender (${adv.opponents[adv.oppDefender].player}). Tap two.</div><div class="wiz-options" id="attackerOpts">`;
+    scored.forEach(s => {
+      const mp = MY_PLAYERS[s.i];
+      html += `<button class="wiz-opt ${recommendedSet.has(s.i) ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${recommendedSet.has(s.i) ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${fmtSigned(s.s)}</span></button>`;
+    });
+    html += `</div><div class="wiz-actions"><button class="btn primary" id="confirmAttackers" disabled>Confirm 2 Attackers</button></div></div>`;
+    advBody.innerHTML = html;
+    const chosen = new Set();
+    const confirmBtn = document.getElementById('confirmAttackers');
+    advBody.querySelectorAll('#attackerOpts .wiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = Number(btn.dataset.i);
+        if (chosen.has(i)) { chosen.delete(i); btn.style.outline = ''; }
+        else if (chosen.size < 2) { chosen.add(i); btn.style.outline = '2px solid var(--accent)'; }
+        confirmBtn.disabled = chosen.size !== 2;
+      });
+    });
+    confirmBtn.addEventListener('click', () => { adv.myAttackers = [...chosen]; advAdvance(); });
+    return;
+  }
+
+  if (step === 3) {
+    const candidates = oppPool.filter(i => i !== adv.oppDefender);
+    html += `<div class="wiz-question">Which 2 of their players were revealed as Attackers?</div><div class="wiz-help">Tap the two the opposing captain revealed.</div><div class="wiz-options" id="oppAttackerOpts">`;
+    candidates.forEach(oi => {
+      const op = adv.opponents[oi];
+      html += `<button class="wiz-opt" data-i="${oi}"><span><span class="opt-name">${op.player}</span><br/><span class="opt-meta">${op.army} &middot; ${op.disposition}</span></span></button>`;
+    });
+    html += `</div><div class="wiz-actions"><button class="btn primary" id="confirmOppAttackers" disabled>Confirm</button></div></div>`;
+    advBody.innerHTML = html;
+    const chosen = new Set();
+    const confirmBtn = document.getElementById('confirmOppAttackers');
+    advBody.querySelectorAll('#oppAttackerOpts .wiz-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = Number(btn.dataset.i);
+        if (chosen.has(i)) { chosen.delete(i); btn.style.outline = ''; }
+        else if (chosen.size < 2) { chosen.add(i); btn.style.outline = '2px solid var(--accent)'; }
+        confirmBtn.disabled = chosen.size !== 2;
+      });
+    });
+    confirmBtn.addEventListener('click', () => { adv.oppAttackers = [...chosen]; advAdvance(); });
+    return;
+  }
+
+  if (step === 4) {
+    const scored = adv.oppAttackers.map(oi => ({ oi, s: scoreMyVsOpp(adv.myDefender, oi).total })).sort((a, b) => b.s - a.s);
+    html += `<div class="wiz-question">Choose which opposing Attacker your Defender faces</div><div class="wiz-help">Recommended = the better matchup for ${MY_PLAYERS[adv.myDefender].name}.</div><div class="wiz-options">`;
+    scored.forEach((s, idx) => {
+      const op = adv.opponents[s.oi];
+      html += `<button class="wiz-opt ${idx === 0 ? 'recommended' : ''}" data-i="${s.oi}"><span><span class="opt-name">${op.player}</span><br/><span class="opt-meta">${op.army} &middot; ${op.disposition}${idx === 0 ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${fmtSigned(s.s)}</span></button>`;
+    });
+    html += `</div></div>`;
+    advBody.innerHTML = html;
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.myChosenAttacker = Number(btn.dataset.i); advAdvance(); }));
+    return;
+  }
+
+  if (step === 5) {
+    html += `<div class="wiz-question">Which of your Attackers did their Defender choose to face?</div><div class="wiz-help">Enter what the opposing captain revealed. The other Attacker carries forward as your refused Attacker.</div><div class="wiz-options">`;
+    adv.myAttackers.forEach(mi => {
+      const mp = MY_PLAYERS[mi];
+      html += `<button class="wiz-opt" data-i="${mi}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}</span></span></button>`;
+    });
+    html += `</div></div>`;
+    advBody.innerHTML = html;
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => {
+      adv.oppChosenAttacker = Number(btn.dataset.i);
+      lockPairing(adv.myDefender, adv.myChosenAttacker);
+      lockPairing(adv.oppChosenAttacker, adv.oppDefender);
+      advAdvance();
+    }));
+    return;
+  }
+}
+
+// ============================================================================
+// FIREBASE (optional) — fill in firebaseConfig to enable live cross-device sync.
+// Until configured, ratings persist to localStorage on this device only.
+// ============================================================================
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT"
+};
+const FIREBASE_CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
+const syncDot = document.getElementById('syncDot');
+let dbRefs = null;
+
+function applyRemoteRatings(data) {
+  if (!data) return;
+  if (data.armies) Object.keys(data.armies).forEach(k => { RATINGS.armies[k] = { ...RATINGS.armies[k], ...data.armies[k] }; });
+  if (data.dispositions) Object.keys(data.dispositions).forEach(k => { RATINGS.dispositions[k] = { ...RATINGS.dispositions[k], ...data.dispositions[k] }; });
+  renderMatchup();
+  if (adv) startAdvanced();
+  if (setupPlayer) renderSetup();
+}
+
+function persistRating(kind, key, item, val) {
+  if (dbRefs) {
+    dbRefs.set(dbRefs.ref(dbRefs.db, `ratings/${kind}/${key}/${item}`), val);
+  } else {
+    localStorage.setItem('webway-ratings', JSON.stringify(RATINGS));
+  }
+}
+
+async function initFirebase() {
+  if (!FIREBASE_CONFIGURED) {
+    syncDot.classList.add('off');
+    syncDot.title = 'Live sync not configured — saving to this device only.';
+    const saved = localStorage.getItem('webway-ratings');
+    if (saved) applyRemoteRatings(JSON.parse(saved));
+    return;
+  }
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js');
+  const { getDatabase, ref, onValue, set } = await import('https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js');
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  dbRefs = { db, ref, set };
+  onValue(ref(db, 'ratings'), snapshot => {
+    syncDot.classList.remove('off'); syncDot.classList.add('on');
+    syncDot.title = 'Live sync connected';
+    applyRemoteRatings(snapshot.val());
+  }, () => {
+    syncDot.classList.add('off');
+    syncDot.title = 'Live sync error — check Firebase config/rules.';
+  });
+}
+
+// ============================================================================
+// INIT
+// ============================================================================
+(async function init() {
+  await loadData();
+  populateOpponentSelects();
+  renderRoute();
+  renderMatchup();
+  renderSetup();
+  await initFirebase();
 })();
 </script>
+</body>
+</html>
