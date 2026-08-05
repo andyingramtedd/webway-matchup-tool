@@ -904,10 +904,13 @@ function renderAdvanced() {
 // Until configured, ratings persist to localStorage on this device only.
 // ============================================================================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT"
+  apiKey: "AIzaSyAHCAO9zs1RZQn3hoEGjdkPBYKIkD-x3gE",
+  authDomain: "webway-matchup.firebaseapp.com",
+  databaseURL: "https://webway-matchup-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "webway-matchup",
+  storageBucket: "webway-matchup.firebasestorage.app",
+  messagingSenderId: "456712760114",
+  appId: "1:456712760114:web:4ec5e325b4b604d0bc052b"
 };
 const FIREBASE_CONFIGURED = firebaseConfig.apiKey !== "YOUR_API_KEY";
 const syncDot = document.getElementById('syncDot');
