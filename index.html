@@ -214,6 +214,12 @@
     padding: 10px 16px; font-weight: 700; font-size: 14px; cursor: pointer;
   }
   .who-btn.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .skill-picker { display: flex; gap: 8px; }
+  .skill-btn {
+    width: 46px; height: 46px; font-family: var(--font-mono); font-size: 16px; font-weight: 800;
+    border: 1px solid var(--line); background: var(--surface-2); color: var(--ink-dim); cursor: pointer;
+  }
+  .skill-btn.active { background: var(--accent2); color: var(--accent-ink); border-color: var(--accent2); }
   .tap-grid { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--surface); }
   .tap-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
   .tap-row:last-child { border-bottom: none; }
@@ -376,10 +382,15 @@ const DEFAULT_DISPOSITION_RATINGS = {
 const ARMIES = Object.keys(DEFAULT_ARMY_RATINGS.luke);
 const DISPOSITIONS = ["Priority Assets","Reconnaissance","Take and Hold","Disruption","Purge the Foe"];
 
+// 1-5 overall skill per player, edited from Team Setup. 3 = neutral/default
+// until someone sets it for real.
+const DEFAULT_SKILL = { luke: 3, court: 3, andy: 3, dale: 3, matt: 3 };
+
 // live, mutable — starts from defaults, overwritten by Firebase (or localStorage) once loaded
 let RATINGS = {
   armies: JSON.parse(JSON.stringify(DEFAULT_ARMY_RATINGS)),
-  dispositions: JSON.parse(JSON.stringify(DEFAULT_DISPOSITION_RATINGS))
+  dispositions: JSON.parse(JSON.stringify(DEFAULT_DISPOSITION_RATINGS)),
+  skill: JSON.parse(JSON.stringify(DEFAULT_SKILL))
 };
 
 let TEAMS = {};      // teamName -> [{player, army, disposition, elo, rank, winPct, confidence, country, event, club, comments}]
@@ -437,13 +448,39 @@ async function loadData() {
 // ============================================================================
 // scoring + assignment
 // ============================================================================
-function scoreOf(myKey, oppArmy, oppDisposition) {
-  const a = RATINGS.armies[myKey]?.[oppArmy] ?? 0;
-  const d = RATINGS.dispositions[myKey]?.[oppDisposition] ?? 0;
-  return { total: a + d, army: a, disposition: d };
+// Map a 1-5 skill rating onto an Elo-ish scale so it's comparable to the
+// opponent Elo numbers in players.csv (75 points per skill level, centred on
+// 1600 at rating 3, which sits close to this event's median).
+function skillElo(rating) { return 1450 + ((rating ?? 3) - 1) * 75; }
+
+// Small nudge based on the Elo gap between our player and a rated opponent.
+// Unrated opponents ("no record") are left at 0 — UKTC's own data notes treat
+// them as an unknown quantity, not a weak one, so we don't guess.
+function skillBonus(myKey, opp) {
+  if (!opp.elo) return 0;
+  const oppElo = Number(opp.elo);
+  if (isNaN(oppElo)) return 0;
+  const gap = skillElo(RATINGS.skill[myKey]) - oppElo;
+  return Math.max(-1, Math.min(1, gap / 200));
 }
-function classFor(n) { return n >= 2 ? 's2' : n === 1 ? 's1' : n === 0 ? 's0' : n === -1 ? 'sm1' : 'sm2'; }
-function fmtSigned(n) { return (n > 0 ? '+' : '') + n; }
+
+function scoreOf(myKey, opp) {
+  const a = RATINGS.armies[myKey]?.[opp.army] ?? 0;
+  const d = RATINGS.dispositions[myKey]?.[opp.disposition] ?? 0;
+  const sk = skillBonus(myKey, opp);
+  return { total: a + d + sk, army: a, disposition: d, skill: sk };
+}
+function classFor(n) {
+  if (n >= 1.5) return 's2';
+  if (n >= 0.5) return 's1';
+  if (n > -0.5) return 's0';
+  if (n > -1.5) return 'sm1';
+  return 'sm2';
+}
+function fmtSigned(n) {
+  const r = Math.round(n * 10) / 10;
+  return (r > 0 ? '+' : '') + (Number.isInteger(r) ? r : r.toFixed(1));
+}
 
 function bestAssignment(matrix, n) {
   const used = new Array(5).fill(false);
@@ -562,7 +599,7 @@ function renderMatchup() {
   } else teamCardEl.innerHTML = `<div class="row1"><span class="name">${currentOpponent}</span></div>`;
 
   const n = Math.min(5, opponents.length);
-  const matrix = MY_PLAYERS.map(mp => opponents.slice(0, n).map(op => scoreOf(mp.key, op.army, op.disposition)));
+  const matrix = MY_PLAYERS.map(mp => opponents.slice(0, n).map(op => scoreOf(mp.key, op)));
   const { score: total, assign } = bestAssignment(matrix, n);
 
   lineupEl.innerHTML = '';
@@ -600,7 +637,7 @@ function renderMatchup() {
   let tbody = '<tbody>' + MY_PLAYERS.map((mp, i) => {
     const cells = matrix[i].map((s, j) => {
       const picked = assign[j] === i ? ' picked' : '';
-      return `<td class="cell ${classFor(s.total)}${picked}"><span class="tot">${fmtSigned(s.total)}</span><span class="brk">army ${fmtSigned(s.army)} &middot; disp ${fmtSigned(s.disposition)}</span></td>`;
+      return `<td class="cell ${classFor(s.total)}${picked}"><span class="tot">${fmtSigned(s.total)}</span><span class="brk">army ${fmtSigned(s.army)} &middot; disp ${fmtSigned(s.disposition)} &middot; skill ${fmtSigned(s.skill)}</span></td>`;
     }).join('');
     return `<tr><th><span class="pname">${mp.name}</span><span class="pmeta">${mp.army} &middot; ${mp.disposition}</span></th>${cells}</tr>`;
   }).join('') + '</tbody>';
@@ -653,6 +690,29 @@ function tapGrid(title, items, ratingsObj, onChange) {
   return wrap;
 }
 
+function skillPicker(current, onChange) {
+  const wrap = document.createElement('div');
+  const h = document.createElement('h2');
+  h.className = 'section-title';
+  h.textContent = 'Overall skill (1-5)';
+  wrap.appendChild(h);
+  const row = document.createElement('div');
+  row.className = 'skill-picker';
+  for (let n = 1; n <= 5; n++) {
+    const btn = document.createElement('button');
+    btn.className = 'skill-btn' + (current === n ? ' active' : '');
+    btn.textContent = String(n);
+    btn.addEventListener('click', () => onChange(n));
+    row.appendChild(btn);
+  }
+  wrap.appendChild(row);
+  const help = document.createElement('div');
+  help.className = 'setup-note';
+  help.textContent = '1 = weakest on the team, 5 = strongest overall (not per-army). Nudges recommendations toward your stronger players against rated opponents.';
+  wrap.appendChild(help);
+  return wrap;
+}
+
 function renderSetup() {
   document.querySelectorAll('.who-btn').forEach((b, i) => b.classList.toggle('active', MY_PLAYERS[i].key === setupPlayer));
   if (!setupPlayer) { setupBody.style.display = 'none'; setupEmpty.style.display = ''; return; }
@@ -665,6 +725,12 @@ function renderSetup() {
   note.innerHTML = `Tap STRONG or WEAK for each army/disposition. Tap the same one again to clear it back to even. <span class="save-flash" id="saveFlash">Saved</span>`;
   setupBody.appendChild(note);
 
+  setupBody.appendChild(skillPicker(RATINGS.skill[setupPlayer] ?? 3, (val) => {
+    RATINGS.skill[setupPlayer] = val;
+    persistSkill(setupPlayer, val);
+    renderSetup();
+    flashSave();
+  }));
   setupBody.appendChild(tapGrid('Armies', ARMIES, RATINGS.armies[setupPlayer], (item, val) => {
     RATINGS.armies[setupPlayer][item] = val;
     persistRating('armies', setupPlayer, item, val);
@@ -734,7 +800,7 @@ function goBack() {
 
 function scoreMyVsOpp(myIdx, oppIdx) {
   const mp = MY_PLAYERS[myIdx], op = adv.opponents[oppIdx];
-  return scoreOf(mp.key, op.army, op.disposition);
+  return scoreOf(mp.key, op);
 }
 
 // "resilient, not blown out" — a Defender's own captain picks the better of the
@@ -969,6 +1035,7 @@ function applyRemoteRatings(data) {
   if (!data) return;
   if (data.armies) Object.keys(data.armies).forEach(k => { RATINGS.armies[k] = { ...RATINGS.armies[k], ...data.armies[k] }; });
   if (data.dispositions) Object.keys(data.dispositions).forEach(k => { RATINGS.dispositions[k] = { ...RATINGS.dispositions[k], ...data.dispositions[k] }; });
+  if (data.skill) RATINGS.skill = { ...RATINGS.skill, ...data.skill };
   renderMatchup();
   if (adv) startAdvanced();
   if (setupPlayer) renderSetup();
@@ -977,6 +1044,14 @@ function applyRemoteRatings(data) {
 function persistRating(kind, key, item, val) {
   if (dbRefs) {
     dbRefs.set(dbRefs.ref(dbRefs.db, `ratings/${kind}/${key}/${item}`), val);
+  } else {
+    localStorage.setItem('webway-ratings', JSON.stringify(RATINGS));
+  }
+}
+
+function persistSkill(key, val) {
+  if (dbRefs) {
+    dbRefs.set(dbRefs.ref(dbRefs.db, `ratings/skill/${key}`), val);
   } else {
     localStorage.setItem('webway-ratings', JSON.stringify(RATINGS));
   }
