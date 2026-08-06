@@ -278,7 +278,7 @@
 <nav class="drawer" id="navDrawer">
   <div class="drawer-title">Navigate</div>
   <a href="#matchup" data-route="matchup">Matchup</a>
-  <a href="#advanced" data-route="advanced">Advanced Matchup</a>
+  <a href="#pairing" data-route="pairing">Pairing Mode</a>
   <a href="#setup" data-route="setup">Team Setup</a>
 </nav>
 
@@ -321,8 +321,8 @@
     </div>
   </section>
 
-  <!-- ============ ADVANCED MATCHUP VIEW ============ -->
-  <section class="view" id="view-advanced">
+  <!-- ============ PAIRING MODE VIEW ============ -->
+  <section class="view" id="view-pairing">
     <div class="picker">
       <label for="advOpponentSelect">Opponent</label>
       <select id="advOpponentSelect"><option value="">— choose a team —</option></select>
@@ -463,7 +463,7 @@ function bestAssignment(matrix, n) {
 // ============================================================================
 // ROUTER
 // ============================================================================
-const routes = ['matchup', 'advanced', 'setup'];
+const routes = ['matchup', 'pairing', 'setup'];
 function currentRoute() {
   const h = (location.hash || '#matchup').slice(1);
   return routes.includes(h) ? h : 'matchup';
@@ -487,7 +487,7 @@ navToggle.addEventListener('click', () => navDrawer.classList.contains('open') ?
 navScrim.addEventListener('click', closeDrawer);
 
 // ============================================================================
-// SHARED: opponent selects (matchup + advanced) stay in sync
+// SHARED: opponent selects (matchup + pairing mode) stay in sync
 // ============================================================================
 let currentOpponent = '';
 const opponentSelect = document.getElementById('opponentSelect');
@@ -686,14 +686,15 @@ function flashSave() {
 }
 
 // ============================================================================
-// ADVANCED MATCHUP WIZARD — Initial Skirmish + Main Engagement
+// PAIRING MODE WIZARD — Initial Skirmish + Main Engagement
 // ============================================================================
 const advEmpty = document.getElementById('advEmpty');
 const advBody = document.getElementById('advBody');
 let adv = null;
+let advHistory = [];
 
 function startAdvanced() {
-  if (!currentOpponent) { adv = null; advEmpty.style.display = ''; advBody.style.display = 'none'; return; }
+  if (!currentOpponent) { adv = null; advHistory = []; advEmpty.style.display = ''; advBody.style.display = 'none'; return; }
   const opponents = TEAMS[currentOpponent] || [];
   if (opponents.length !== 5) {
     advEmpty.style.display = '';
@@ -703,6 +704,7 @@ function startAdvanced() {
   }
   advEmpty.style.display = 'none';
   advBody.style.display = 'flex';
+  advHistory = [];
   adv = {
     opponents,
     phase: 'initial',       // 'initial' | 'main' | 'done'
@@ -718,14 +720,30 @@ function startAdvanced() {
   renderAdvanced();
 }
 
+// snapshot state before a mutating action, so it can be undone with Back
+function withHistory(fn) {
+  advHistory.push(JSON.parse(JSON.stringify(adv)));
+  fn();
+  renderAdvanced();
+}
+function goBack() {
+  if (!advHistory.length) return;
+  adv = advHistory.pop();
+  renderAdvanced();
+}
+
 function scoreMyVsOpp(myIdx, oppIdx) {
   const mp = MY_PLAYERS[myIdx], op = adv.opponents[oppIdx];
   return scoreOf(mp.key, op.army, op.disposition);
 }
 
-function avgScoreAgainstPool(myIdx, oppIndices) {
+// "resilient, not blown out" — a Defender's own captain picks the better of the
+// two Attackers offered against them, so the real risk is the WORST case they
+// could still be stuck with. Floor (min score across the remaining pool) is a
+// better fit for that than a raw average.
+function floorScoreAgainstPool(myIdx, oppIndices) {
   const scores = oppIndices.map(oi => scoreMyVsOpp(myIdx, oi).total);
-  return scores.reduce((a, b) => a + b, 0) / scores.length;
+  return { floor: Math.min(...scores), avg: scores.reduce((a, b) => a + b, 0) / scores.length };
 }
 
 function phaseLabel() { return adv.phase === 'initial' ? 'Initial Skirmish' : 'Main Engagement'; }
@@ -757,7 +775,6 @@ function advAdvance() {
       adv.phase = 'done';
     }
   }
-  renderAdvanced();
 }
 
 function progressDots() {
@@ -770,9 +787,17 @@ function progressDots() {
   return html + '</div>';
 }
 
+function backButton() {
+  return `<div class="wiz-actions"><button class="btn" id="wizBack" ${advHistory.length ? '' : 'disabled'}>&larr; Back</button></div>`;
+}
+function wireBackButton() {
+  const btn = document.getElementById('wizBack');
+  if (btn) btn.addEventListener('click', goBack);
+}
+
 function renderAdvanced() {
   if (!adv) return;
-  let html = progressDots();
+  let html = progressDots() + backButton();
 
   if (adv.pairings.length) {
     html += '<div class="wiz-locked">';
@@ -787,6 +812,7 @@ function renderAdvanced() {
     const total = adv.pairings.reduce((a, p) => a + p.score, 0);
     html += `<div class="wiz-card"><div class="wiz-phase">Round complete</div><div class="wiz-question">All 5 pairings locked</div><div class="totalbar" style="margin:0 -16px -16px;"><div class="label">Projected total</div><div class="value">${fmtSigned(total)}</div></div></div>`;
     advBody.innerHTML = html;
+    wireBackButton();
     return;
   }
 
@@ -796,15 +822,16 @@ function renderAdvanced() {
   html += `<div class="wiz-card"><div class="wiz-phase">${phaseLabel()} &middot; step ${step + 1} of 6</div>`;
 
   if (step === 0) {
-    html += `<div class="wiz-question">Pick your Defender</div><div class="wiz-help">Recommended = best average score across the opponents still in the pool.</div><div class="wiz-options">`;
-    const scored = pool.map(i => ({ i, avg: avgScoreAgainstPool(i, oppPool) })).sort((a, b) => b.avg - a.avg);
+    html += `<div class="wiz-question">Pick your Defender</div><div class="wiz-help">Recommended = most resilient (highest worst-case score) against the opponents still in the pool — a Defender you pick the better matchup for, but shouldn't risk getting blown out if things go wrong elsewhere.</div><div class="wiz-options">`;
+    const scored = pool.map(i => ({ i, ...floorScoreAgainstPool(i, oppPool) })).sort((a, b) => b.floor - a.floor || b.avg - a.avg);
     scored.forEach((s, idx) => {
       const mp = MY_PLAYERS[s.i];
-      html += `<button class="wiz-opt ${idx === 0 ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${idx === 0 ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${s.avg.toFixed(1)} avg</span></button>`;
+      html += `<button class="wiz-opt ${idx === 0 ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${idx === 0 ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">floor ${fmtSigned(s.floor)} &middot; avg ${s.avg.toFixed(1)}</span></button>`;
     });
     html += `</div></div>`;
     advBody.innerHTML = html;
-    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.myDefender = Number(btn.dataset.i); advAdvance(); }));
+    wireBackButton();
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => withHistory(() => { adv.myDefender = Number(btn.dataset.i); advAdvance(); })));
     return;
   }
 
@@ -816,21 +843,37 @@ function renderAdvanced() {
     });
     html += `</div></div>`;
     advBody.innerHTML = html;
-    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.oppDefender = Number(btn.dataset.i); advAdvance(); }));
+    wireBackButton();
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => withHistory(() => { adv.oppDefender = Number(btn.dataset.i); advAdvance(); })));
     return;
   }
 
   if (step === 2) {
     const candidates = pool.filter(i => i !== adv.myDefender);
-    const scored = candidates.map(i => ({ i, s: scoreMyVsOpp(i, adv.oppDefender).total })).sort((a, b) => b.s - a.s);
-    const recommendedSet = new Set(scored.slice(0, 2).map(x => x.i));
-    html += `<div class="wiz-question">Pick your 2 Attackers</div><div class="wiz-help">Recommended = your 2 best scores against their revealed Defender (${adv.opponents[adv.oppDefender].player}). Tap two.</div><div class="wiz-options" id="attackerOpts">`;
+    const scored = candidates.map(i => { const s = scoreMyVsOpp(i, adv.oppDefender); return { i, total: s.total, army: s.army, disposition: s.disposition }; }).sort((a, b) => b.total - a.total);
+    // Recommend a diverse pair, not two of the same threat — per UKTC's own
+    // pairing guide, offering two similar-strength Attackers just hands the
+    // opponent's Defender an easy "accept the lesser evil" choice and lets
+    // them save a counter-pick for whichever one you didn't offer. So pick
+    // #1 = your strongest score against their Defender, pick #2 = the best
+    // remaining option whose army/disposition profile differs most from #1.
+    const first = scored[0];
+    const rest = scored.slice(1).sort((a, b) => {
+      const distA = Math.abs(a.army - first.army) + Math.abs(a.disposition - first.disposition);
+      const distB = Math.abs(b.army - first.army) + Math.abs(b.disposition - first.disposition);
+      return distB - distA || b.total - a.total;
+    });
+    const second = rest[0];
+    const recommendedTags = { [first.i]: 'Strong threat', [second.i]: 'Different threat' };
+    html += `<div class="wiz-question">Pick your 2 Attackers</div><div class="wiz-help">Recommended pair offers a different kind of problem each, not two of the same threat — the opponent's Defender will accept whichever is less bad for them and refuse the other back to your pool, so two similar options make that choice easy for them. Tap two.</div><div class="wiz-options" id="attackerOpts">`;
     scored.forEach(s => {
       const mp = MY_PLAYERS[s.i];
-      html += `<button class="wiz-opt ${recommendedSet.has(s.i) ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${recommendedSet.has(s.i) ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${fmtSigned(s.s)}</span></button>`;
+      const tag = recommendedTags[s.i];
+      html += `<button class="wiz-opt ${tag ? 'recommended' : ''}" data-i="${s.i}"><span><span class="opt-name">${mp.name}</span><br/><span class="opt-meta">${mp.army} &middot; ${mp.disposition}${tag ? ` <span class=\"wiz-tag\">${tag}</span>` : ''}</span></span><span class="opt-score">${fmtSigned(s.total)}</span></button>`;
     });
     html += `</div><div class="wiz-actions"><button class="btn primary" id="confirmAttackers" disabled>Confirm 2 Attackers</button></div></div>`;
     advBody.innerHTML = html;
+    wireBackButton();
     const chosen = new Set();
     const confirmBtn = document.getElementById('confirmAttackers');
     advBody.querySelectorAll('#attackerOpts .wiz-opt').forEach(btn => {
@@ -841,7 +884,7 @@ function renderAdvanced() {
         confirmBtn.disabled = chosen.size !== 2;
       });
     });
-    confirmBtn.addEventListener('click', () => { adv.myAttackers = [...chosen]; advAdvance(); });
+    confirmBtn.addEventListener('click', () => withHistory(() => { adv.myAttackers = [...chosen]; advAdvance(); }));
     return;
   }
 
@@ -854,6 +897,7 @@ function renderAdvanced() {
     });
     html += `</div><div class="wiz-actions"><button class="btn primary" id="confirmOppAttackers" disabled>Confirm</button></div></div>`;
     advBody.innerHTML = html;
+    wireBackButton();
     const chosen = new Set();
     const confirmBtn = document.getElementById('confirmOppAttackers');
     advBody.querySelectorAll('#oppAttackerOpts .wiz-opt').forEach(btn => {
@@ -864,20 +908,24 @@ function renderAdvanced() {
         confirmBtn.disabled = chosen.size !== 2;
       });
     });
-    confirmBtn.addEventListener('click', () => { adv.oppAttackers = [...chosen]; advAdvance(); });
+    confirmBtn.addEventListener('click', () => withHistory(() => { adv.oppAttackers = [...chosen]; advAdvance(); }));
     return;
   }
 
   if (step === 4) {
+    // The "accept the lesser evil" step: take whichever offered Attacker is
+    // the better matchup for our Defender, refusing the nastier one back to
+    // the opponent's pool for later.
     const scored = adv.oppAttackers.map(oi => ({ oi, s: scoreMyVsOpp(adv.myDefender, oi).total })).sort((a, b) => b.s - a.s);
-    html += `<div class="wiz-question">Choose which opposing Attacker your Defender faces</div><div class="wiz-help">Recommended = the better matchup for ${MY_PLAYERS[adv.myDefender].name}.</div><div class="wiz-options">`;
+    html += `<div class="wiz-question">Choose which opposing Attacker your Defender faces</div><div class="wiz-help">Recommended = the better matchup for ${MY_PLAYERS[adv.myDefender].name} — accept the lesser evil, refuse the nastier one back to their pool.</div><div class="wiz-options">`;
     scored.forEach((s, idx) => {
       const op = adv.opponents[s.oi];
       html += `<button class="wiz-opt ${idx === 0 ? 'recommended' : ''}" data-i="${s.oi}"><span><span class="opt-name">${op.player}</span><br/><span class="opt-meta">${op.army} &middot; ${op.disposition}${idx === 0 ? ' <span class=\"wiz-tag\">Recommended</span>' : ''}</span></span><span class="opt-score">${fmtSigned(s.s)}</span></button>`;
     });
     html += `</div></div>`;
     advBody.innerHTML = html;
-    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => { adv.myChosenAttacker = Number(btn.dataset.i); advAdvance(); }));
+    wireBackButton();
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => withHistory(() => { adv.myChosenAttacker = Number(btn.dataset.i); advAdvance(); })));
     return;
   }
 
@@ -889,12 +937,13 @@ function renderAdvanced() {
     });
     html += `</div></div>`;
     advBody.innerHTML = html;
-    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => {
+    wireBackButton();
+    advBody.querySelectorAll('.wiz-opt').forEach(btn => btn.addEventListener('click', () => withHistory(() => {
       adv.oppChosenAttacker = Number(btn.dataset.i);
       lockPairing(adv.myDefender, adv.myChosenAttacker);
       lockPairing(adv.oppChosenAttacker, adv.oppDefender);
       advAdvance();
-    }));
+    })));
     return;
   }
 }
