@@ -920,15 +920,18 @@ function renderAdvanced() {
     // Recommend a diverse pair, not two of the same threat — per UKTC's own
     // pairing guide, offering two similar-strength Attackers just hands the
     // opponent's Defender an easy "accept the lesser evil" choice and lets
-    // them save a counter-pick for whichever one you didn't offer. So pick
-    // #1 = your strongest score against their Defender, pick #2 = the best
-    // remaining option whose army/disposition profile differs most from #1.
+    // them save a counter-pick for whichever one you didn't offer. Pick #1 =
+    // your strongest score against their Defender. Pick #2 favours a
+    // different army/disposition profile from #1, but only as a tie-breaker
+    // between similarly-strong options — a small nudge (max +1.0, capped
+    // below any real score gap), never a reason to offer a genuinely weak
+    // second Attacker just because their profile looks different.
     const first = scored[0];
-    const rest = scored.slice(1).sort((a, b) => {
-      const distA = Math.abs(a.army - first.army) + Math.abs(a.disposition - first.disposition);
-      const distB = Math.abs(b.army - first.army) + Math.abs(b.disposition - first.disposition);
-      return distB - distA || b.total - a.total;
-    });
+    const DIVERSITY_WEIGHT = 0.25; // max distance is 4 (army +/-2, disposition +/-2) -> max nudge 1.0
+    const rest = scored.slice(1).map(c => ({
+      ...c,
+      distance: Math.abs(c.army - first.army) + Math.abs(c.disposition - first.disposition)
+    })).sort((a, b) => (b.total + DIVERSITY_WEIGHT * b.distance) - (a.total + DIVERSITY_WEIGHT * a.distance));
     const second = rest[0];
     const recommendedTags = { [first.i]: 'Strong threat', [second.i]: 'Different threat' };
     html += `<div class="wiz-question">Pick your 2 Attackers</div><div class="wiz-help">Recommended pair offers a different kind of problem each, not two of the same threat — the opponent's Defender will accept whichever is less bad for them and refuse the other back to your pool, so two similar options make that choice easy for them. Tap two.</div><div class="wiz-options" id="attackerOpts">`;
